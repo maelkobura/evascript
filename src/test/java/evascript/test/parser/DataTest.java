@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class StatementTest {
+public class DataTest {
 
     public List<Token> tokens(String in) {
         EvaLexer lexer = new EvaLexer(in);
@@ -16,58 +16,57 @@ public class StatementTest {
     }
 
     @Test
-    void ifTest() {
-        EvaParser parser = new EvaParser(tokens("if (true) { console.log('Hello World!'); }"));
+    void emptyData() {
+        EvaParser parser = new EvaParser(tokens("let a = {};"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void expressionTest() {
-        EvaParser parser = new EvaParser(tokens("console.log('Hello World!')"));
+    void simpleData() {
+        EvaParser parser = new EvaParser(tokens("let a = {hello: 'world'};"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void forTest() {
-        EvaParser parser = new EvaParser(tokens("for(let i : range(10)) { console.log('Hello World!'); }"));
+    void complexData() {
+        EvaParser parser = new EvaParser(tokens("let a = {hello: 'world',14: 'world',[System.call()]:45};"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void whileTest() {
-        EvaParser parser = new EvaParser(tokens("while(true) { console.log('Hello World!'); }"));
+    void nestedData() {
+        EvaParser parser = new EvaParser(tokens("let a = {hello: 'world',14: {hello: 'world',14: 'world',[System.call()]:45}};"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void lambdaTest() {
-        EvaParser parser = new EvaParser(tokens("let value = func async () { console.log('Hello World!'); }"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
-    }
-
-
-    @Test
-    void lambdaArgsTest() {
-        EvaParser parser = new EvaParser(tokens("let value = func async (message) { console.log(message); }"));
+    void simpleArray() {
+        EvaParser parser = new EvaParser(tokens("let a = [1,2,3];"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void funcTest() {
-        EvaParser parser = new EvaParser(tokens("func hello() { console.log('Hello World!'); }"));
+    void simpleArrayAccess() {
+        EvaParser parser = new EvaParser(tokens("let a = b[14];"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void funcArgsTest() {
-        EvaParser parser = new EvaParser(tokens("func hello(message) { console.log(message); }"));
+    void expressionArrayAccess() {
+        EvaParser parser = new EvaParser(tokens("let a = b[System.call()];"));
+        BlockStatement statement = parser.parseAsBlock();
+        System.out.println(statement);
+    }
+
+    @Test
+    void strageArrayAccess() {
+        EvaParser parser = new EvaParser(tokens("let a = [1,2,3][System.call()];"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }

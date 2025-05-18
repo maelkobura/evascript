@@ -8,25 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class StatementTest {
+public class LoopTest {
 
     public List<Token> tokens(String in) {
         EvaLexer lexer = new EvaLexer(in);
         return lexer.readAll();
-    }
-
-    @Test
-    void ifTest() {
-        EvaParser parser = new EvaParser(tokens("if (true) { console.log('Hello World!'); }"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
-    }
-
-    @Test
-    void expressionTest() {
-        EvaParser parser = new EvaParser(tokens("console.log('Hello World!')"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
     }
 
     @Test
@@ -44,32 +30,25 @@ public class StatementTest {
     }
 
     @Test
-    void lambdaTest() {
-        EvaParser parser = new EvaParser(tokens("let value = func async () { console.log('Hello World!'); }"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
-    }
-
-
-    @Test
-    void lambdaArgsTest() {
-        EvaParser parser = new EvaParser(tokens("let value = func async (message) { console.log(message); }"));
+    void doWhileTest() {
+        EvaParser parser = new EvaParser(tokens("do { console.log('Hello World!'); } while(true);"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void funcTest() {
-        EvaParser parser = new EvaParser(tokens("func hello() { console.log('Hello World!'); }"));
+    void breakTest() {
+        EvaParser parser = new EvaParser(tokens("while(true) { console.log('Hello World!'); break; }"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
 
     @Test
-    void funcArgsTest() {
-        EvaParser parser = new EvaParser(tokens("func hello(message) { console.log(message); }"));
+    void continueTest() {
+        EvaParser parser = new EvaParser(tokens("while(true) { console.log('Hello World!'); continue; }"));
         BlockStatement statement = parser.parseAsBlock();
         System.out.println(statement);
     }
+
 
 }

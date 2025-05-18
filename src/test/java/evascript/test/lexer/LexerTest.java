@@ -1,8 +1,8 @@
 package evascript.test.lexer;
 
-import gg.kobuz.evascript.lexer.EvaLexer;
-import gg.kobuz.evascript.lexer.token.SyntaxToken;
-import gg.kobuz.evascript.lexer.token.Token;
+import dev.kobura.evascript.lexer.EvaLexer;
+import dev.kobura.evascript.lexer.token.SyntaxToken;
+import dev.kobura.evascript.lexer.token.Token;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -55,10 +55,12 @@ public class LexerTest {
         assertEquals(SyntaxToken.RBRACE, token.type);
     }
 
+    @Test
     void testAutomaticLexer() {
-        EvaLexer lexer = new EvaLexer("if (true) { console.log('Hello World!'); }");
+        EvaLexer lexer = new EvaLexer("if (true) {console.log('Hello World!');}");
         List<Token> token = lexer.readAll();
-        assertEquals(16, token.size());
+        token.forEach(System.out::println);
+        assertEquals(13, token.size());
     }
 
 }
