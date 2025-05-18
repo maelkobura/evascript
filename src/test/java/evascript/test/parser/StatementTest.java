@@ -72,4 +72,18 @@ public class StatementTest {
         System.out.println(statement);
     }
 
+    @Test
+    void tryCatchTest() {
+        EvaParser parser = new EvaParser(tokens("try { console.log('Trying...'); } catch(e) { console.log(e); }"));
+        BlockStatement statement = parser.parseAsBlock();
+        System.out.println(statement);
+    }
+
+    @Test
+    void tryCatchFinallyTest() {
+        EvaParser parser = new EvaParser(tokens("try { console.log('Trying...'); } catch(e) { console.log(e); } finally { console.log('Finished.'); }"));
+        BlockStatement statement = parser.parseAsBlock();
+        System.out.println(statement);
+    }
+
 }

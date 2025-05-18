@@ -114,9 +114,9 @@ public class JavaObjectValue extends Value {
             return Value.from(result);
         } catch (IllegalAccessException e) {
             return super.execute(execution, user, methodName, args);
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
-                    e.getCause().getMessage(), e.getCause());
+                    e.getMessage(), e);
         }
     }
     

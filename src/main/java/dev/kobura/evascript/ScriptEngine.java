@@ -108,7 +108,6 @@ public class ScriptEngine {
     }
 
     public String run(String code, Scope scope, PermissiveUser user) throws RuntimeError {
-
         EvaSyntax.ParseResult result = EvaSyntax.preprocess(code);
         if(result.root != null) {
             EvaLexer lexer = new EvaLexer(result.root);
@@ -131,9 +130,14 @@ public class ScriptEngine {
             ExpressionStatement stmt = parser.parseAsExpression();
             Execution execution = new Execution(this, scope, user);
             Object value = execution.runEmbed(stmt);
-            values.add(value.toString());
+            if(value != null) {
+                values.add(value.toString());
+            }else {
+                values.add("");
+            }
         }
 
+        long end = System.nanoTime();
         return result.reassemble(values);
     }
 

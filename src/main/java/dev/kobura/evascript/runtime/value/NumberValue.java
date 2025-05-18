@@ -33,10 +33,14 @@ public class NumberValue extends Value {
     @Override
     public Value add(Value other) throws RuntimeError {
 
+        try {
         if(other.getType() == ValueType.STRING) {
             return new StringValue(val + other.toString());
         }else if(other.getType() == ValueType.NUMBER) {
             return new NumberValue(val + ((NumberValue) other).val);
+        }
+        } catch (Exception e) {
+            throw new RuntimeError(e.getMessage());
         }
 
         return null;
@@ -45,7 +49,11 @@ public class NumberValue extends Value {
     @Override
     public Value subtract(Value other) throws RuntimeError {
         if(other.getType() == ValueType.NUMBER) {
-            return new NumberValue(val + (double) other.unwrap());
+            try {
+                return new NumberValue(val + ((NumberValue) other).val);
+            } catch (Exception e) {
+                throw new RuntimeError(e.getMessage());
+            }
         }
         throw new RuntimeError("Unsupported operation");
     }
@@ -53,7 +61,11 @@ public class NumberValue extends Value {
     @Override
     public Value multiply(Value other) throws RuntimeError {
         if(other.getType() == ValueType.NUMBER) {
-            return new NumberValue(val * (double) other.unwrap());
+            try {
+                return new NumberValue(val * ((NumberValue) other).val);
+            } catch (Exception e) {
+                throw new RuntimeError(e.getMessage());
+            }
         }
         throw new RuntimeError("Unsupported operation");
     }
@@ -61,7 +73,14 @@ public class NumberValue extends Value {
     @Override
     public Value divide(Value other) throws RuntimeError {
         if(other.getType() == ValueType.NUMBER) {
-            return new NumberValue(val / (double) other.unwrap());
+            try {
+                if(((NumberValue) other).val == 0) {
+                    throw new RuntimeError("Division by zero");
+                }
+                return new NumberValue(val / ((NumberValue) other).val);
+            } catch (Exception e) {
+                throw new RuntimeError(e.getMessage());
+            }
         }
         throw new RuntimeError("Unsupported operation");
     }

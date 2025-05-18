@@ -52,4 +52,24 @@ public class ScriptEngineTest {
         assertEquals("Bonjour le monde: 18", engine.run(code, scope, null));
     }
 
+    @Test
+    void testTryCatch() throws RuntimeError, LoadingBuildinException {
+        String code = "<? try{date.create(\"mouahahah\");} catch(e) {var error = e;} > L'erreur: {error}";
+        ScriptEngine engine = ScriptEngine.create().build();
+        engine.loadDefaultBuildin();
+        Scope scope = new Scope(engine);
+        assertEquals("L'erreur: Native method 'create' threw an exception: argument type mismatch", engine.run(code, scope, null));
+    }
+
+
+    @Test
+    void testTryCatchFinally() throws RuntimeError, LoadingBuildinException {
+        String code = "<? try{let x = 10 / 0;} catch(e) {var error = e;} finally {var message = \"Execution completed.\";} > Error: {error}, Message: {message}";
+        ScriptEngine engine = ScriptEngine.create().build();
+        engine.loadDefaultBuildin();
+        Scope scope = new Scope(engine);
+        engine.run(code, scope, null);
+        assertEquals("Error: Division by zero, Message: Execution completed.", engine.run(code, scope, null));
+    }
+
 }

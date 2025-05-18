@@ -371,7 +371,9 @@ public class Interpreter implements NodeVisitor {
             execution.let(new ContextIdentity(node.getCatchVariable(), false, Instant.now(), 0), new StringValue(e.getMessage()));
             node.getCatchBlock().accept(this, execution);
         }finally {
-            node.getFinallyBlock().accept(this, execution);
+            if(node.getFinallyBlock() != null) {
+                node.getFinallyBlock().accept(this, execution);
+            }
         }
         return UndefinedValue.INSTANCE;
     }
