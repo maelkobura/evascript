@@ -1,0 +1,5 @@
+<?
+var z = {world: "World"};
+var i = {hello: {["hello"]: "Hello"}, ...z};
+>
+{i.hello.hello}{i.world}

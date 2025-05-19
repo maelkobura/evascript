@@ -21,6 +21,7 @@ import io.github.classgraph.ScanResult;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -139,6 +140,11 @@ public class ScriptEngine {
 
         long end = System.nanoTime();
         return result.reassemble(values);
+    }
+
+    public String run(File file, Scope scope, PermissiveUser user) throws RuntimeError, IOException {
+        FileInputStream in = new FileInputStream(file);
+        return run(new String(in.readAllBytes()), scope, user);
     }
 
     public boolean checkPermissions(PermissiveUser user, String...permissions) {

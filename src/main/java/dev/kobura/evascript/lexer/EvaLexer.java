@@ -125,6 +125,8 @@ public class EvaLexer {
         TokenType type = keywords.getOrDefault(text, SyntaxToken.IDENTIFIER);
         return new Token(type, text, line);
     }
+    
+    
 
     // Reads and returns a single token
     public Token readToken() {
@@ -133,22 +135,8 @@ public class EvaLexer {
 
         // Handle newlines and continuation via '|'
         if (current == '\n' || current == '\r') {
-            boolean isWindows = false;
-            if (current == '\r' && peekNext() == '\n') isWindows = true;
-
-            if (position > 0 && input.charAt(position - 1) == '|') {
-                advance(); // \r
-                if (isWindows) advance(); // \n
-                else if (current == '\n') advance(); // \n seul
-                return readToken();
-            }
-
-            advance(); // \r or \n
-            if (isWindows) advance(); // skip \n
-            else if (current == '\n') advance();
-
-            line++;
-            return new Token(SyntaxToken.JUMP, "\\n", line);
+            advance();
+            return null;
         }
 
         if (Character.isDigit(current)) {
@@ -204,7 +192,10 @@ public class EvaLexer {
     public List<Token> readAll() {
         List<Token> tokens = new ArrayList<>();
         while (position < input.length()) {
-            tokens.add(readToken());
+            Token token = readToken();
+            if(token != null) {
+                tokens.add(token);
+            }
         }
         return tokens;
     }

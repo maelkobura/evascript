@@ -1,14 +1,19 @@
 package dev.kobura.evascript.runtime.value;
 
+import com.google.gson.Gson;
 import dev.kobura.evascript.runtime.Execution;
 import dev.kobura.evascript.security.PermissiveUser;
+import lombok.Getter;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ObjectValue extends Value {
 
+    @Getter
     Map<String, Value> values;
+
+    private static final Gson gson = new Gson();
 
     public Map<String, Object> unwrap() {
         return values.entrySet().stream()
@@ -56,7 +61,7 @@ public class ObjectValue extends Value {
 
     @Override
     public String toString() {
-        return values.toString();
+        return gson.toJsonTree(values).toString();
     }
 
 }

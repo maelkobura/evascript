@@ -6,6 +6,11 @@ import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.context.Scope;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ScriptEngineTest {
@@ -18,9 +23,25 @@ public class ScriptEngineTest {
     }
 
     @Test
+    void testSampleCode() throws RuntimeError, IOException {
+        File file = new File("src/test/resources/sample.txt");
+        ScriptEngine engine = ScriptEngine.create().build();
+        Scope scope = new Scope(engine);
+        assertEquals("HelloWorld", engine.run(file, scope, null));
+    }
+
+    @Test
+    void testDataObject() throws RuntimeError, IOException {
+        String code = "<?var z = {world: \"World\"}; var i = {hello: {[\"hello\"]: \"Hello\"}, ...z};> {i.hello.hello}{i.world}";
+        ScriptEngine engine = ScriptEngine.create().build();
+        Scope scope = new Scope(engine);
+        assertEquals("HelloWorld", engine.run(code, scope, null));
+    }
+
+    @Test
     void testWithRootExpression() throws RuntimeError, LoadingBuildinException {
         String code = "<?\n" +
-                "let cat = \"Bruno\"\n" +
+                "let cat = \"Bruno\";" +
                 ">\n" +
                 "Your cat name is {cat}.";
         ScriptEngine engine = ScriptEngine.create().build();
@@ -49,7 +70,7 @@ public class ScriptEngineTest {
         ScriptEngine engine = ScriptEngine.create().build();
         engine.loadDefaultBuildin();
         Scope scope = new Scope(engine);
-        assertEquals("Bonjour le monde: 18", engine.run(code, scope, null));
+        assertEquals("Bonjour le monde: " + Calendar.getInstance().get(Calendar.DAY_OF_MONTH), engine.run(code, scope, null));
     }
 
     @Test

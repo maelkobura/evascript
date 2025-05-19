@@ -11,6 +11,10 @@ import dev.kobura.evascript.parsing.ast.expression.context.ReturnStatement;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.VariableDeclaration;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.SequencedArgumentExpression;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.StructuredArgumentExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.DataExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.DataItemExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.DataKeyExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.RestExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.BinaryExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.ComparisonExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.UnaryExpression;
@@ -50,6 +54,10 @@ public interface NodeVisitor {
     Value visitIfStatement(IfStatement node, Execution execution) throws RuntimeError;
     Value visitSwitchStatement(SwitchStatement node, Execution execution) throws RuntimeError;
     Value visitTryStatement(TryStatement node, Execution execution) throws RuntimeError;
+
+    Value visitDataExpression(DataExpression node, Execution execution) throws RuntimeError;
+    Value visitDataKeyExpression(DataKeyExpression node, Execution execution);
+    Value visitRestExpression(RestExpression node, Execution execution) throws RuntimeError;
 
     // Declarations and others
     Value visitFunctionDeclaration(FunctionDeclaration node, Execution execution) throws RuntimeError;

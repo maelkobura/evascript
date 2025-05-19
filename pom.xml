@@ -16,9 +16,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino-all</artifactId>
-            <version>1.8.0</version>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

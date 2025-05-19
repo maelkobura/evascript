@@ -21,6 +21,6 @@ public class DataExpression extends ASTExpression {
 
     @Override
     public Value accept(NodeVisitor visitor, Execution execution, Value... values) throws RuntimeError {
-        return UndefinedValue.INSTANCE;
+        return visitor.visitDataExpression(this, execution);
     }
 }

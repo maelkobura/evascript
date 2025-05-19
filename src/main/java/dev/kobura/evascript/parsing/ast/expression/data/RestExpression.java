@@ -19,6 +19,6 @@ public class RestExpression extends ASTExpression {
 
     @Override
     public Value accept(NodeVisitor visitor, Execution execution, Value... values) throws RuntimeError {
-        return UndefinedValue.INSTANCE;
+        return visitor.visitRestExpression(this, execution);
     }
 }

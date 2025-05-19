@@ -15,6 +15,10 @@ import dev.kobura.evascript.parsing.ast.expression.context.ReturnStatement;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.VariableDeclaration;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.SequencedArgumentExpression;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.StructuredArgumentExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.DataExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.DataItemExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.DataKeyExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.RestExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.BinaryExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.ComparisonExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.UnaryExpression;
@@ -376,6 +380,35 @@ public class Interpreter implements NodeVisitor {
             }
         }
         return UndefinedValue.INSTANCE;
+    }
+
+    @Override
+    public Value visitDataExpression(DataExpression node, Execution execution) throws RuntimeError {
+
+        Map<String, Value> values = new HashMap<>();
+        for(ASTExpression expression : node.getItems()) {
+            if(expression instanceof DataItemExpression) {
+                StringValue key = (StringValue) ((DataItemExpression) expression).getKey().accept(this, execution);
+                values.put(key.toString(), ((DataItemExpression) expression).getValue().accept(this, execution));
+            }else if(expression instanceof RestExpression) {
+                values.putAll(((ObjectValue) expression.accept(this, execution)).getValues());
+            }
+        }
+
+        return new ObjectValue(values);
+    }
+
+
+    @Override
+    public Value visitDataKeyExpression(DataKeyExpression node, Execution execution) {
+        return new StringValue(node.getKey().value);
+    }
+
+    @Override
+    public Value visitRestExpression(RestExpression node, Execution execution) throws RuntimeError {
+        Value val = node.getTarget().accept(this, execution);
+        if(val.getType() != ValueType.OBJECT) throw new RuntimeError("Rest expression must do reference to a data object");
+        return val;
     }
 
     @Override
