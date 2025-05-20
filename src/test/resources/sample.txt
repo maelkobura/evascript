@@ -1,5 +1,1 @@
-<?
-var z = {world: "World"};
-var i = {hello: {["hello"]: "Hello"}, ...z};
->
-{i.hello.hello}{i.world}
+<? var i = [14, 56, 78]; var z = []; i.foreach(func (a) { z.append(a + 20); }); > {z[1]}

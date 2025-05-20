@@ -2,6 +2,7 @@ package dev.kobura.evascript.runtime.value;
 
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.Execution;
+import dev.kobura.evascript.runtime.context.ContextData;
 import dev.kobura.evascript.runtime.context.Scriptable;
 import dev.kobura.evascript.security.PermissiveUser;
 
@@ -91,7 +92,7 @@ public class JavaObjectValue extends Value {
             List<Object> obj = (List<Object>) args.unwrap();
             int i = 0;
             for(Parameter param : method.getParameters()) {
-                if(param.isAnnotationPresent(Scriptable.class)) {
+                if(param.isAnnotationPresent(ContextData.class)) {
                     javaArgs.add(execution.getContextData().get(param.getName()));
                 }else {
                     javaArgs.add(obj.get(i));
@@ -101,7 +102,7 @@ public class JavaObjectValue extends Value {
         }else if(args.getType() == ValueType.OBJECT) {
             Map<String, Object> obj = (Map<String, Object>) args.unwrap();
             for(Parameter param : method.getParameters()) {
-                if(param.isAnnotationPresent(Scriptable.class)) {
+                if(param.isAnnotationPresent(ContextData.class)) {
                     javaArgs.add(execution.getContextData().get(param.getName()));
                 }else {
                     javaArgs.add(obj.get(param.getName()));

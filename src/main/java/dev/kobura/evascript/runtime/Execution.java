@@ -4,6 +4,7 @@ import dev.kobura.evascript.ScriptEngine;
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.parsing.ast.statement.BlockStatement;
 import dev.kobura.evascript.parsing.ast.statement.ExpressionStatement;
+import dev.kobura.evascript.runtime.context.ContextData;
 import dev.kobura.evascript.runtime.context.ContextIdentity;
 import dev.kobura.evascript.runtime.context.Scope;
 import dev.kobura.evascript.runtime.interpreter.Interpreter;
@@ -34,12 +35,21 @@ public class Execution {
         this.parent = parent;
         this.scope = new Scope(parent.scope);
         this.user = user;
+        this.contextData = parent.contextData;
+
+        this.contextData.put("execution", this);
+        this.contextData.put("user", user);
+
     }
 
-    public Execution(ScriptEngine engine, Scope scope, PermissiveUser user) {
+    public Execution(ScriptEngine engine, Scope scope, PermissiveUser user, Map<String, Object> contextData) {
         this.engine = engine;
         this.scope = scope;
+        this.contextData = contextData;
         this.user = user;
+
+        this.contextData.put("execution", this);
+        this.contextData.put("user", user);
     }
 
     public void var(ContextIdentity identity, Value value) {
@@ -48,6 +58,10 @@ public class Execution {
 
     public void let(ContextIdentity identity, Value value) {
         scope.set(identity, value);
+    }
+
+    public void set(String name, Value value) {
+        scope.set(name, value);
     }
 
     public void undefine(String name) {

@@ -8,17 +8,18 @@ import java.util.Map;
 
 public class Scope {
 
-    private Map<ContextIdentity, Value> varPool;
-    private ScriptEngine engine;
+    private final Map<ContextIdentity, Value> varPool;
+    private final ScriptEngine engine;
 
     private Scope parent;
 
     public Value get(String name) {
-        return varPool.keySet().stream()
-                .filter(identity -> identity.getName().equals(name))
-                .findFirst()
-                .map(varPool::get)
-                .orElse(parent != null ? parent.get(name) : engine.getBuildInByName(name));
+        for (ContextIdentity id : varPool.keySet()) {
+            if (id.getName().equals(name)) {
+                return varPool.get(id);
+            }
+        }
+        return parent != null ? parent.get(name) : engine.getBuildInByName(name);
     }
 
     public Scope(ScriptEngine engine) {

@@ -136,6 +136,7 @@ public class EvaLexer {
         // Handle newlines and continuation via '|'
         if (current == '\n' || current == '\r') {
             advance();
+            line++;
             return null;
         }
 

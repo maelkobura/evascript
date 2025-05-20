@@ -23,6 +23,20 @@ public class LoopTest {
     }
 
     @Test
+    void completeForTest() {
+        EvaParser parser = new EvaParser(tokens("var i = [14, 56, 78]; var z = []; for(let a:i) { z.append(a + 20);"));
+        BlockStatement statement = parser.parseAsBlock();
+        System.out.println(statement);
+    }
+
+    @Test
+    void forEachTest() {
+        EvaParser parser = new EvaParser(tokens("var i = [14, 56, 78]; var z = []; i.foreach(func (a) { z.append(a + 20); });"));
+        BlockStatement statement = parser.parseAsBlock();
+        System.out.println(statement);
+    }
+
+    @Test
     void whileTest() {
         EvaParser parser = new EvaParser(tokens("while(true) { console.log('Hello World!'); }"));
         BlockStatement statement = parser.parseAsBlock();

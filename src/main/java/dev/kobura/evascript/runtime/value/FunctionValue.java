@@ -19,7 +19,7 @@ public class FunctionValue extends Value {
 
     @Override
     public Object unwrap() {
-        return null;
+        return this;
     }
 
     @Override

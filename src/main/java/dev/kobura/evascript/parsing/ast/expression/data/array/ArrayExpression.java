@@ -20,6 +20,6 @@ public class ArrayExpression extends ASTExpression {
 
     @Override
     public Value accept(NodeVisitor visitor, Execution execution, Value... values) throws RuntimeError {
-        return UndefinedValue.INSTANCE;
+        return visitor.visitArrayExpression(this, execution);
     }
 }

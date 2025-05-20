@@ -19,6 +19,8 @@ import dev.kobura.evascript.parsing.ast.expression.data.DataExpression;
 import dev.kobura.evascript.parsing.ast.expression.data.DataItemExpression;
 import dev.kobura.evascript.parsing.ast.expression.data.DataKeyExpression;
 import dev.kobura.evascript.parsing.ast.expression.data.RestExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.array.ArrayAccessExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.array.ArrayExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.BinaryExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.ComparisonExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.UnaryExpression;
@@ -56,8 +58,13 @@ public class Interpreter implements NodeVisitor {
         if(node.getTarget() != null) {
 
             if(node.getTarget() instanceof ContextAccessExpression) {
-                Value target = ((ContextAccessExpression) node.getTarget()).getTarget().accept(this, execution);
-                target.setField(execution, execution.getUser(), ((ContextAccessExpression) node.getTarget()).getIdentifier(), value);
+                if(((ContextAccessExpression) node.getTarget()).getTarget() != null) {
+                    Value target = ((ContextAccessExpression) node.getTarget()).getTarget().accept(this, execution);
+                    target.setField(execution, execution.getUser(), ((ContextAccessExpression) node.getTarget()).getIdentifier(), value);
+                }else {
+                    execution.set(((ContextAccessExpression) node.getTarget()).getIdentifier(), value);
+                }
+                return UndefinedValue.INSTANCE;
             }
 
             Value target = node.getTarget().accept(this, execution);
@@ -66,7 +73,7 @@ public class Interpreter implements NodeVisitor {
             throw new RuntimeError("Target of assignment is null");
         }
 
-        return null;
+        return UndefinedValue.INSTANCE;
     }
 
     @Override
@@ -292,10 +299,11 @@ public class Interpreter implements NodeVisitor {
         if(rawIterable.getType() != ValueType.ARRAY) {
             throw new RuntimeError("Iterable must be an array");
         }
-        List<Value> iterable = (List<Value>) rawIterable.unwrap();
+        List<Value> iterable = ((ArrayValue)rawIterable).getValues();
         for(Value value : iterable) {
+            execution.let(new ContextIdentity(varname, false, Instant.now(), 0), value);
             try {
-                node.accept(this, execution, rawIterable);
+                node.getBody().accept(this, execution);
             }catch (ContinueSignal signal) {
                 continue;
             }catch (BreakSignal signal) {
@@ -304,6 +312,8 @@ public class Interpreter implements NodeVisitor {
                 throw signal;
             } catch (RuntimeError e) {
                 throw e;
+            } finally {
+                execution.undefine(varname);
             }
         }
 
@@ -419,6 +429,25 @@ public class Interpreter implements NodeVisitor {
         FunctionValue value = new FunctionValue(node.getBody(), node.isAsync(), args);
         execution.var(id, value);
         return value;
+    }
+
+    @Override
+    public Value visitArrayExpression(ArrayExpression node, Execution execution) throws RuntimeError {
+        List<Value> values = new ArrayList<>();
+        for(ASTExpression expression : node.getItems()) {
+            values.add(expression.accept(this, execution));
+        }
+        return new ArrayValue(values);
+    }
+
+    @Override
+    public Value visitArrayAccessExpression(ArrayAccessExpression node, Execution execution) throws RuntimeError {
+        Value target = node.getTarget().accept(this, execution);
+        if(target.getType() != ValueType.ARRAY) throw new RuntimeError("Array access expression must do reference to an array");
+        Value index = node.getIndex().accept(this, execution);
+        if(index.getType() != ValueType.NUMBER && !(index.unwrap() instanceof Integer)) throw new RuntimeError("Array index must be a integer");
+
+        return ((ArrayValue) target).getValues().get((int) index.unwrap());
     }
 
 }

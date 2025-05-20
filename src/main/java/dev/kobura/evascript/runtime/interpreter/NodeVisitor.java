@@ -15,6 +15,8 @@ import dev.kobura.evascript.parsing.ast.expression.data.DataExpression;
 import dev.kobura.evascript.parsing.ast.expression.data.DataItemExpression;
 import dev.kobura.evascript.parsing.ast.expression.data.DataKeyExpression;
 import dev.kobura.evascript.parsing.ast.expression.data.RestExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.array.ArrayAccessExpression;
+import dev.kobura.evascript.parsing.ast.expression.data.array.ArrayExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.BinaryExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.ComparisonExpression;
 import dev.kobura.evascript.parsing.ast.expression.logical.UnaryExpression;
@@ -61,4 +63,9 @@ public interface NodeVisitor {
 
     // Declarations and others
     Value visitFunctionDeclaration(FunctionDeclaration node, Execution execution) throws RuntimeError;
+
+    Value visitArrayExpression(ArrayExpression node, Execution execution) throws RuntimeError;
+    Value visitArrayAccessExpression(ArrayAccessExpression node, Execution execution) throws RuntimeError;
+
+
 }

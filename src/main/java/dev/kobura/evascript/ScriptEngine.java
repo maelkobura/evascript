@@ -117,7 +117,7 @@ public class ScriptEngine {
             EvaParser parser = new EvaParser(tokens);
             BlockStatement block = parser.parseAsBlock();
 
-            Execution execution = new Execution(this, scope, user);
+            Execution execution = new Execution(this, scope, user, new HashMap<>());
             execution.runRoot(block);
         }
 
@@ -129,7 +129,7 @@ public class ScriptEngine {
 
             EvaParser parser = new EvaParser(tokens);
             ExpressionStatement stmt = parser.parseAsExpression();
-            Execution execution = new Execution(this, scope, user);
+            Execution execution = new Execution(this, scope, user, new HashMap<>());
             Object value = execution.runEmbed(stmt);
             if(value != null) {
                 values.add(value.toString());
