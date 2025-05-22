@@ -108,6 +108,12 @@ public class RootedEngine implements ScriptEngine {
     }
 
     @Override
+    public List<Register> getRegisters() {
+        return registers;
+    }
+
+
+    @Override
     public void systemMethod(RegisteredFunction function) {
         systems.add(function);
     }

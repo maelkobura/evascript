@@ -183,6 +183,7 @@ public class EvaLexer {
                 case ':': return new Token(SyntaxToken.COLON, String.valueOf(advance()), line);
                 case '/': return new Token(ArithmeticToken.DIVIDE, String.valueOf(advance()), line);
                 case '!': return new Token(SyntaxToken.BANG, String.valueOf(advance()), line);
+                case '@': return new Token(SyntaxToken.AT, String.valueOf(advance()), line);
                 default:
                     throw new RuntimeException("Unexpected character: " + current + " at line " + line);
             }

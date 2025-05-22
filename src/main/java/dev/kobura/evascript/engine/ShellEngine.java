@@ -1,6 +1,7 @@
 package dev.kobura.evascript.engine;
 
 import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.engine.register.RequireFunction;
 import dev.kobura.evascript.errors.LoadingBuildinException;
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.lexer.EvaLexer;
@@ -95,6 +96,8 @@ public class ShellEngine implements ScriptEngine {
 
         }
 
+        systems.add(new RequireFunction());
+
     }
 
     private final Map<ContextIdentity, Value> builtin = new HashMap<>();
@@ -121,13 +124,22 @@ public class ShellEngine implements ScriptEngine {
         BlockStatement block = parser.parseAsBlock();
 
         Execution execution = new Execution(this, scope, user, new HashMap<>());
-        return execution.run(block).toString();
+        Object obj = execution.run(block);
+        if(obj == null) {
+            obj = UndefinedValue.INSTANCE;
+        }
+        return obj.toString();
     }
 
     @Override
     public String run(File file, Scope scope, PermissiveUser user) throws RuntimeError, IOException {
         FileInputStream in = new FileInputStream(file);
         return run(new String(in.readAllBytes()), scope, user);
+    }
+
+    @Override
+    public List<Register> getRegisters() {
+        return registers;
     }
 
     @Override

@@ -546,7 +546,14 @@ public class EvaParser {
         consume(SyntaxToken.LPAREN, "Expected '(' after method name");
         ArgumentExpression arguments = parseArgumentExpression();
         consume(SyntaxToken.RPAREN, "Expected ')' after method arguments");
-        return new SystemCallExpression(methodName, arguments);
+
+        SystemCallExpression expr = new SystemCallExpression(methodName, arguments);
+
+        if(match(SyntaxToken.DOT)) {
+            return parseContextAccess(expr);
+        }
+
+        return expr;
     }
 
     private ASTExpression parseBinaryExpression() {

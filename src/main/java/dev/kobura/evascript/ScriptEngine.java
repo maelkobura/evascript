@@ -11,6 +11,7 @@ import dev.kobura.evascript.security.PermissiveUser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public interface ScriptEngine {
@@ -44,6 +45,8 @@ public interface ScriptEngine {
     Map<ContextIdentity, Value> getAllBuiltin();
 
     void register(Register register);
+
+    List<Register> getRegisters();
 
     String run(String code, Scope scope, PermissiveUser user) throws RuntimeError;
 
