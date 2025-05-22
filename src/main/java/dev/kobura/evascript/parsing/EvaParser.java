@@ -1,7 +1,7 @@
 package dev.kobura.evascript.parsing;
 
 import dev.kobura.evascript.lexer.token.*;
-import dev.kobura.evascript.parsing.ast.expression.context.ReturnStatement;
+import dev.kobura.evascript.parsing.ast.expression.context.*;
 import dev.kobura.evascript.parsing.ast.statement.*;
 import dev.kobura.evascript.lexer.token.*;
 import dev.kobura.evascript.parsing.ast.ASTExpression;
@@ -10,9 +10,6 @@ import dev.kobura.evascript.parsing.ast.FunctionDeclaration;
 import dev.kobura.evascript.parsing.ast.expression.ForeachExpression;
 import dev.kobura.evascript.parsing.ast.expression.LambdaExpression;
 import dev.kobura.evascript.parsing.ast.expression.LiteralExpression;
-import dev.kobura.evascript.parsing.ast.expression.context.AssignementExpression;
-import dev.kobura.evascript.parsing.ast.expression.context.ContextAccessExpression;
-import dev.kobura.evascript.parsing.ast.expression.context.MethodCallExpression;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.VariableDeclaration;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.ArgumentDeclarationExpression;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.ArgumentExpression;
@@ -418,6 +415,14 @@ public class EvaParser {
             return parseLambdaExpression();
         }
 
+        if (check(SyntaxToken.FUNC)) {
+            return parseLambdaExpression();
+        }
+
+        if(match(SyntaxToken.AT)) {
+            return parseSystemCallExpression();
+        }
+
         if (check(SyntaxToken.LBRACE)) {
             return parseDataBlock();
         }
@@ -534,6 +539,14 @@ public class EvaParser {
         ArgumentExpression arguments = parseArgumentExpression();
         consume(SyntaxToken.RPAREN, "Expected ')' after method arguments");
         return new MethodCallExpression(expr, methodName, arguments, methodToken);
+    }
+
+    private ASTExpression parseSystemCallExpression() {
+        String methodName = consume(SyntaxToken.IDENTIFIER, "Expected method name").value;
+        consume(SyntaxToken.LPAREN, "Expected '(' after method name");
+        ArgumentExpression arguments = parseArgumentExpression();
+        consume(SyntaxToken.RPAREN, "Expected ')' after method arguments");
+        return new SystemCallExpression(methodName, arguments);
     }
 
     private ASTExpression parseBinaryExpression() {

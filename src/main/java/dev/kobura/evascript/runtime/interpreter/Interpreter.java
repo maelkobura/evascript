@@ -260,7 +260,14 @@ public class Interpreter implements NodeVisitor {
     }
 
     @Override
+    public Value visitSystemCallExpression(SystemCallExpression node, Execution execution) throws RuntimeError {
+        List<Value> values = ((ArrayValue) node.getArguments().accept(this, execution)).getValues();
+        return execution.getEngine().invokeSystem(execution, node.getMethodName(), values.toArray(values.toArray(new Value[0])));
+    }
+
+    @Override
     public Value visitBlockStatement(BlockStatement node, Execution execution) throws RuntimeError {
+        Value returnValue = UndefinedValue.INSTANCE;
         for(ASTStatement statement : node.getStatements()) {
             if(statement instanceof BreakStatement) {
                 throw new BreakSignal();
@@ -269,9 +276,9 @@ public class Interpreter implements NodeVisitor {
             }else if(statement instanceof ReturnStatement) {
                 throw new ReturnSignal(statement.accept(this, execution));
             }
-            statement.accept(this, execution);
+            returnValue = statement.accept(this, execution);
         }
-        return UndefinedValue.INSTANCE;
+        return returnValue;
     }
 
     @Override

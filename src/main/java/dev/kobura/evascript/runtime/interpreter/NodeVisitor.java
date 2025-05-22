@@ -4,10 +4,7 @@ import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.parsing.ast.FunctionDeclaration;
 import dev.kobura.evascript.parsing.ast.expression.LambdaExpression;
 import dev.kobura.evascript.parsing.ast.expression.LiteralExpression;
-import dev.kobura.evascript.parsing.ast.expression.context.AssignementExpression;
-import dev.kobura.evascript.parsing.ast.expression.context.ContextAccessExpression;
-import dev.kobura.evascript.parsing.ast.expression.context.MethodCallExpression;
-import dev.kobura.evascript.parsing.ast.expression.context.ReturnStatement;
+import dev.kobura.evascript.parsing.ast.expression.context.*;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.VariableDeclaration;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.SequencedArgumentExpression;
 import dev.kobura.evascript.parsing.ast.expression.context.variable.args.StructuredArgumentExpression;
@@ -44,6 +41,7 @@ public interface NodeVisitor {
     // Method call
     Value visitMethodCallExpression(MethodCallExpression node, Execution execution) throws RuntimeError;
     Value visitReturnStatement(ReturnStatement node, Execution execution) throws RuntimeError;
+    Value visitSystemCallExpression(SystemCallExpression node, Execution execution) throws RuntimeError;
 
     // Statements - loops
     Value visitBlockStatement(BlockStatement node, Execution execution) throws RuntimeError;
@@ -66,6 +64,5 @@ public interface NodeVisitor {
 
     Value visitArrayExpression(ArrayExpression node, Execution execution) throws RuntimeError;
     Value visitArrayAccessExpression(ArrayAccessExpression node, Execution execution) throws RuntimeError;
-
 
 }

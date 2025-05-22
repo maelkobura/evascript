@@ -30,6 +30,11 @@ public class Date {
             calendar.setTimeInMillis(timestamp);
             return calendar.get(Calendar.DAY_OF_MONTH);
         }
+
+        @Override
+        public String toString() {
+            return String.valueOf(timestamp);
+        }
     }
 
     @Scriptable

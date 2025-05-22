@@ -8,7 +8,7 @@ public enum SyntaxToken implements TokenType {
     IDENTIFIER,
 
     // Punctuation and delimiters used in the syntax
-    LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, COMMA, COLON, SEMICOLON, DOT, BANG, TRIPLEDOT,
+    LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, COMMA, COLON, SEMICOLON, DOT, BANG, TRIPLEDOT, AT,
 
     // Data types and literals
     ASSIGN, NUMBER, DOUBLE, LONG, FLOAT, STRING, BOOLEAN, JUMP,

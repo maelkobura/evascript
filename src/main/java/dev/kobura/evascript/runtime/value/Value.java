@@ -46,7 +46,6 @@ public abstract class Value {
                     int i = 0;
                     for(Parameter param : mtd.getParameters()) {
                         if(param.isAnnotationPresent(ContextData.class)) {
-                            System.out.println(param.getName());
                             javaArgs.add(execution.getContextData().get(param.getName()));
                         }else {
                             javaArgs.add(param.getType().equals(Value.class) ? obj.get(i) : obj.get(i).unwrap());
@@ -69,6 +68,7 @@ public abstract class Value {
                 } catch (IllegalAccessException e) {
                     break;
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
                             e.getMessage(), e);
                 }

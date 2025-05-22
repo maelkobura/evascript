@@ -1,6 +1,7 @@
 package evascript.test;
 
 import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.engine.EngineFactory;
 import dev.kobura.evascript.errors.LoadingBuildinException;
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.context.Scope;
@@ -13,9 +14,8 @@ public class Benchmark {
         String code = "<? try{let x = 10 / 0;} catch(e) {var error = e;} finally {var message = \"Execution completed.\";} > Error: {error}, Message: {message}";
 
         // Create engine and load default built-ins
-        ScriptEngine engine = ScriptEngine.create().build();
-        engine.loadDefaultBuildin();
-        Scope scope = new Scope(engine);
+        ScriptEngine engine = EngineFactory.createRootedEngine().build();
+        Scope scope = engine.createScope();
 
         // Benchmark the code snippet
         long totalExecutionTime = 0;

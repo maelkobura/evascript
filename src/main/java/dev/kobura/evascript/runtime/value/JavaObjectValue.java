@@ -7,7 +7,6 @@ import dev.kobura.evascript.runtime.context.Scriptable;
 import dev.kobura.evascript.security.PermissiveUser;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public class JavaObjectValue extends Value {
             return UndefinedValue.INSTANCE;
         }
 
-        if(!execution.getEngine().checkPermissions(user, field.getAnnotation(Scriptable.class).permissions())) {
+        if(execution.getEngine().checkPermissions(user, field.getAnnotation(Scriptable.class).permissions())) {
             return UndefinedValue.INSTANCE;
         }
 

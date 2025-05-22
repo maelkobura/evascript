@@ -113,4 +113,16 @@ public class Execution {
     }
 
 
+    public Object run(BlockStatement block) throws RuntimeError {
+        NodeVisitor visitor = new Interpreter();
+        try {
+            return block.accept(visitor, this).unwrap();
+        }catch (ReturnSignal e) {
+            throw new RuntimeError("Unsupported return statement in root code");
+        }catch (BreakSignal e) {
+            throw new RuntimeError("Unsupported break statement in root code");
+        }catch (ContinueSignal e) {
+            throw new RuntimeError("Unsupported continue statement in root code");
+        }
+    }
 }

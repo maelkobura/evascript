@@ -1,14 +1,20 @@
 package dev.kobura.evascript.runtime.context;
 
 import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.runtime.value.UndefinedValue;
 import dev.kobura.evascript.runtime.value.Value;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Scope {
 
-    private final Map<ContextIdentity, Value> varPool;
+    private final ConcurrentMap<ContextIdentity, Value> varPool;
     private final ScriptEngine engine;
 
     private Scope parent;
@@ -19,17 +25,20 @@ public class Scope {
                 return varPool.get(id);
             }
         }
-        return parent != null ? parent.get(name) : engine.getBuildInByName(name);
+        if(parent != null) {
+            return parent.get(name);
+        }
+        return UndefinedValue.INSTANCE;
     }
 
     public Scope(ScriptEngine engine) {
         this.engine = engine;
-        this.varPool = new HashMap<>();
+        this.varPool = new ConcurrentHashMap<>();
     }
 
     public Scope(Scope parent) {
         this.parent = parent;
-        this.varPool = new HashMap<>();
+        this.varPool = new ConcurrentHashMap<>();
         this.engine = parent.engine;
     }
 
@@ -57,6 +66,17 @@ public class Scope {
 
     public void set(ContextIdentity identity, Value value) {
         varPool.put(identity, value);
+    }
+
+    public void refresh() {
+        for (ContextIdentity id : varPool.keySet()) {
+            if(id.getExpiration() != 0) {
+                Duration duration = Duration.between(id.getCreation(), Instant.now());
+                if(duration.toMillis() >= id.getExpiration()) {
+                    undefine(id.getName());
+                }
+            }
+        }
     }
 
 }
