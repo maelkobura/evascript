@@ -1,7 +1,9 @@
 package dev.kobura.evascript.engine;
 
 import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.engine.register.ExpireFunction;
 import dev.kobura.evascript.engine.register.RequireFunction;
+import dev.kobura.evascript.engine.register.TypeofFunction;
 import dev.kobura.evascript.errors.LoadingBuildinException;
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.lexer.EvaLexer;
@@ -97,7 +99,8 @@ public class ShellEngine implements ScriptEngine {
         }
 
         systems.add(new RequireFunction());
-
+        systems.add(new ExpireFunction());
+        systems.add(new TypeofFunction());
     }
 
     private final Map<ContextIdentity, Value> builtin = new HashMap<>();

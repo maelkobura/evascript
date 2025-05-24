@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 public class LoopTest {
 
     public List<Token> tokens(String in) {
@@ -18,50 +20,43 @@ public class LoopTest {
     @Test
     void forTest() {
         EvaParser parser = new EvaParser(tokens("for(let i : range(10)) { console.log('Hello World!'); }"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void completeForTest() {
         EvaParser parser = new EvaParser(tokens("var i = [14, 56, 78]; var z = []; for(let a:i) { z.append(a + 20);"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void forEachTest() {
         EvaParser parser = new EvaParser(tokens("var i = [14, 56, 78]; var z = []; i.foreach(func (a) { z.append(a + 20); });"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void whileTest() {
         EvaParser parser = new EvaParser(tokens("while(true) { console.log('Hello World!'); }"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void doWhileTest() {
         EvaParser parser = new EvaParser(tokens("do { console.log('Hello World!'); } while(true);"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void breakTest() {
         EvaParser parser = new EvaParser(tokens("while(true) { console.log('Hello World!'); break; }"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void continueTest() {
         EvaParser parser = new EvaParser(tokens("while(true) { console.log('Hello World!'); continue; }"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
 

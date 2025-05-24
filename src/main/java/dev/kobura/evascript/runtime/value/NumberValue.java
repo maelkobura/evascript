@@ -31,6 +31,11 @@ public class NumberValue extends Value {
     }
 
     @Override
+    public String toString() {
+        return String.valueOf(unwrap());
+    }
+
+    @Override
     public Value add(Value other) throws RuntimeError {
 
         try {
@@ -50,7 +55,7 @@ public class NumberValue extends Value {
     public Value subtract(Value other) throws RuntimeError {
         if(other.getType() == ValueType.NUMBER) {
             try {
-                return new NumberValue(val + ((NumberValue) other).val);
+                return new NumberValue(val - ((NumberValue) other).val);
             } catch (Exception e) {
                 throw new RuntimeError(e.getMessage());
             }

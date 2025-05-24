@@ -1,4 +1,4 @@
-package evascript.test.require;
+package evascript.test.systems;
 
 import dev.kobura.evascript.ScriptEngine;
 import dev.kobura.evascript.engine.EngineFactory;
@@ -15,7 +15,8 @@ public class RequireTest {
     void testRequire() throws LoadingBuildinException, RuntimeError {
         ScriptEngine engine = EngineFactory.createShellEngine().build();
         Scope scope = engine.createScope();
-        assertEquals("45", engine.run("@require('bonjour')", scope, null));
+        engine.register(new evascript.test.sample.SampleRegister());
+        assertEquals("Hello World!", engine.run("@require('helloworld').hello()", scope, null));
     }
 
 }

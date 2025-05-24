@@ -293,7 +293,9 @@ public class EvaParser {
 
     private ASTStatement parseVariableDeclaration(Token type) {
         Token nameToken = consume(SyntaxToken.IDENTIFIER, "Expected variable name");
-        consume(SyntaxToken.ASSIGN, "Expected '=' in variable declaration");
+        if(!match(SyntaxToken.ASSIGN)) {
+            return new VariableDeclaration(nameToken.value, null, (SyntaxToken) type.type, nameToken);
+        }
         ASTExpression initialValue = parseExpression();
         consume(SyntaxToken.JUMP, "Expected line jump or ';' at end of variable declaration");
         return new VariableDeclaration(nameToken.value, initialValue, (SyntaxToken) type.type, nameToken);
@@ -399,7 +401,7 @@ public class EvaParser {
 
         if (match(SyntaxToken.BOOLEAN)) {
             Token booleanToken = previous();
-            return new LiteralExpression(booleanToken.value, booleanToken);
+            return new LiteralExpression(Boolean.valueOf(booleanToken.value), booleanToken);
         }
 
         if (check(SyntaxToken.IDENTIFIER)) {

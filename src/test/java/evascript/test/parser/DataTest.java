@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 public class DataTest {
 
     public List<Token> tokens(String in) {
@@ -18,57 +20,49 @@ public class DataTest {
     @Test
     void emptyData() {
         EvaParser parser = new EvaParser(tokens("let a = {};"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void simpleData() {
         EvaParser parser = new EvaParser(tokens("let a = {hello: 'world'};"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void complexData() {
         EvaParser parser = new EvaParser(tokens("let a = {hello: 'world',14: 'world',[System.call()]:45};"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void nestedData() {
         EvaParser parser = new EvaParser(tokens("let a = {hello: 'world',14: {hello: 'world',14: 'world',[System.call()]:45}};"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void simpleArray() {
         EvaParser parser = new EvaParser(tokens("let a = [1,2,3];"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void simpleArrayAccess() {
         EvaParser parser = new EvaParser(tokens("let a = b[14];"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void expressionArrayAccess() {
         EvaParser parser = new EvaParser(tokens("let a = b[System.call()];"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
     @Test
     void strageArrayAccess() {
         EvaParser parser = new EvaParser(tokens("let a = [1,2,3][System.call()];"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
 }

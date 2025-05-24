@@ -59,7 +59,6 @@ public class LexerTest {
     void testAutomaticLexer() {
         EvaLexer lexer = new EvaLexer("if (true) {console.log('Hello World!');}");
         List<Token> token = lexer.readAll();
-        token.forEach(System.out::println);
         assertEquals(13, token.size());
     }
 

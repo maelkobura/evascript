@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 public class SwitchTest {
 
     public List<Token> tokens(String in) {
@@ -21,8 +23,7 @@ public class SwitchTest {
                 "case true: console.log('Hello World!'); " +
                 "break; " +
                 "}"));
-        BlockStatement statement = parser.parseAsBlock();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsBlock);
     }
 
 }

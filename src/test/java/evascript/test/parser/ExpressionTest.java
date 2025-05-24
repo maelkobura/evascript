@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 public class ExpressionTest {
 
     public List<Token> tokens(String in) {
@@ -19,116 +21,100 @@ public class ExpressionTest {
     @Test
     void binaryAddition() {
         EvaParser parser = new EvaParser(tokens("1 + 1"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
 
     @Test
     void binaryMultiplication() {
         EvaParser parser = new EvaParser(tokens("2 * 3"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void binaryDivision() {
         EvaParser parser = new EvaParser(tokens("4 / 2"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void binaryModulo() {
         EvaParser parser = new EvaParser(tokens("4 % 2"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void binarySubtraction() {
         EvaParser parser = new EvaParser(tokens("4 - 2"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
 
     @Test
     void binaryMathExpression() {
         EvaParser parser = new EvaParser(tokens("( 3 + 4 ) * 2"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
 
     @Test
     void binaryMoreComplicatedMathExpression() {
         EvaParser parser = new EvaParser(tokens("( 3 + 4 ) * 2 + 10 - 5 * 2"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void unaryMinus() {
         EvaParser parser = new EvaParser(tokens("a--"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void unaryPlus() {
         EvaParser parser = new EvaParser(tokens("a++"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void unaryNot() {
         EvaParser parser = new EvaParser(tokens("!a"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void functionCall() {
         EvaParser parser = new EvaParser(tokens("system.log('Hello World!')"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void variable() {
         EvaParser parser = new EvaParser(tokens("a"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void number() {
         EvaParser parser = new EvaParser(tokens("10"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void string() {
         EvaParser parser = new EvaParser(tokens("\"Hello World!\""));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void bool() {
         EvaParser parser = new EvaParser(tokens("true"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
     @Test
     void contextAccess() {
         EvaParser parser = new EvaParser(tokens("a = system.randomData"));
-        ExpressionStatement statement = parser.parseAsExpression();
-        System.out.println(statement);
+        assertDoesNotThrow(parser::parseAsExpression);
     }
 
 }

@@ -13,6 +13,7 @@ import dev.kobura.evascript.runtime.interpreter.control.BreakSignal;
 import dev.kobura.evascript.runtime.interpreter.control.ContinueSignal;
 import dev.kobura.evascript.runtime.interpreter.control.ReturnSignal;
 import dev.kobura.evascript.runtime.value.NullValue;
+import dev.kobura.evascript.runtime.value.UndefinedValue;
 import dev.kobura.evascript.runtime.value.Value;
 import dev.kobura.evascript.security.PermissiveUser;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Execution {
 
     @Getter
     private final ScriptEngine engine;
+    @Getter
     private final Scope scope;
     private Execution parent;
     @Getter
@@ -52,12 +54,22 @@ public class Execution {
         this.contextData.put("user", user);
     }
 
-    public void var(ContextIdentity identity, Value value) {
+    public void var(ContextIdentity identity, Value value) throws RuntimeError {
+        if(scope.get(identity.getName()) != UndefinedValue.INSTANCE) {
+            throw new RuntimeError(identity.getName() +" already defined in current scope");
+        }
         scope.getMain().set(identity, value);
     }
 
-    public void let(ContextIdentity identity, Value value) {
+    public void let(ContextIdentity identity, Value value) throws RuntimeError {
+        if(scope.get(identity.getName()) != UndefinedValue.INSTANCE) {
+            throw new RuntimeError(identity.getName() +" already defined in current scope");
+        }
         scope.set(identity, value);
+    }
+
+    public void redefine(ContextIdentity older, ContextIdentity newer) {
+        scope.redefine(older, newer);
     }
 
     public void set(String name, Value value) {
@@ -70,6 +82,10 @@ public class Execution {
 
     public Value get(String name) {
         return scope.get(name);
+    }
+
+    public Value get(ContextIdentity identity) {
+        return scope.get(identity);
     }
 
     public Value runAsFunction(BlockStatement block) throws RuntimeError {

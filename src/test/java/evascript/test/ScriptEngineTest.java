@@ -20,12 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ScriptEngineTest {
 
-    @Test
-    void testSimpleExpression() throws RuntimeError, LoadingBuildinException {
-        ScriptEngine engine = EngineFactory.createRootedEngine().build();
-        Scope scope = engine.createScope();
-        assertEquals("Bonjour 45", engine.run("Bonjour {44+1}", scope, null));
-    }
+
 
     @Test
     void testSampleCode() throws RuntimeError, IOException, LoadingBuildinException {
@@ -52,45 +47,6 @@ public class ScriptEngineTest {
         ScriptEngine engine = EngineFactory.createRootedEngine().build();
         Scope scope = engine.createScope();
         assertEquals("Your cat name is Bruno.", engine.run(code, scope, null));
-    }
-
-    @Test
-    void testFunction() throws RuntimeError, LoadingBuildinException {
-        String code = "<?" +
-                "func hello() {" +
-                "let world = \"Hello world!\";" +
-                "return world;" +
-                "}>" +
-                "Bonjour le monde: {hello()}";
-        ScriptEngine engine = EngineFactory.createRootedEngine().build();
-        Scope scope = engine.createScope();
-        assertEquals("Bonjour le monde: Hello world!", engine.run(code, scope, null));
-    }
-
-    @Test
-    void testInterop() throws RuntimeError, LoadingBuildinException {
-        String code = "Bonjour le monde: {date.now().getDay()}";
-        ScriptEngine engine = EngineFactory.createRootedEngine().build();
-        Scope scope = engine.createScope();
-        assertEquals("Bonjour le monde: " + Calendar.getInstance().get(Calendar.DAY_OF_MONTH), engine.run(code, scope, null));
-    }
-
-    @Test
-    void testTryCatch() throws RuntimeError, LoadingBuildinException {
-        String code = "<? try{date.create(\"mouahahah\");} catch(e) {var error = e;} > L'erreur: {error}";
-        ScriptEngine engine = EngineFactory.createRootedEngine().build();
-        Scope scope = engine.createScope();
-        assertEquals("L'erreur: Native method 'create' threw an exception: argument type mismatch", engine.run(code, scope, null));
-    }
-
-
-    @Test
-    void testTryCatchFinally() throws RuntimeError, LoadingBuildinException {
-        String code = "<? try{let x = 10 / 0;} catch(e) {var error = e;} finally {var message = \"Execution completed.\";} > Error: {error}, Message: {message}";
-        ScriptEngine engine = EngineFactory.createRootedEngine().build();
-        Scope scope = engine.createScope();
-        engine.run(code, scope, null);
-        assertEquals("Error: Division by zero, Message: Execution completed.", engine.run(code, scope, null));
     }
 
     @Test

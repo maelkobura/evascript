@@ -7,9 +7,9 @@ public class SampleRegister implements Register {
 
     @Override
     public Object require(String name) {
-        return switch (name) {
-            case "helloworld" -> new SampleObject();
-            default -> null;
-        };
+        if(name.equals("helloworld")) {
+            return new SampleObject();
+        }
+        return null;
     }
 }

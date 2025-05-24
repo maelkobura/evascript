@@ -31,6 +31,10 @@ public class Scope {
         return UndefinedValue.INSTANCE;
     }
 
+    public Value get(ContextIdentity identity) {
+        return varPool.getOrDefault(identity, parent != null ? parent.get(identity) : UndefinedValue.INSTANCE);
+    }
+
     public Scope(ScriptEngine engine) {
         this.engine = engine;
         this.varPool = new ConcurrentHashMap<>();
@@ -53,6 +57,30 @@ public class Scope {
             return;
         }
         varPool.remove(id);
+    }
+    public void redefine(ContextIdentity older, ContextIdentity newer) {
+        if(newer == null) {
+            undefine(older.getName());
+            return;
+        }
+        for (ContextIdentity id : varPool.keySet()) {
+            if (id.getName().equals(older.getName())) {
+                varPool.put(newer, varPool.get(id));
+                varPool.remove(id);
+                return;
+            }
+        }
+        if(parent != null) {
+            parent.redefine(older, newer);
+        }
+    }
+
+    public Map<ContextIdentity, Value> getPool() {
+        Map<ContextIdentity, Value> pool = new HashMap<>(varPool);
+        if(parent != null) {
+            pool.putAll(parent.getPool());
+        }
+        return pool;
     }
 
     public void set(String name, Value value) {

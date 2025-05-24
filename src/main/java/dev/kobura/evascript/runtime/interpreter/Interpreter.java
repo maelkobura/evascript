@@ -54,7 +54,7 @@ public class Interpreter implements NodeVisitor {
 
     @Override
     public Value visitAssignementExpression(AssignementExpression node, Execution execution) throws RuntimeError {
-        Value value = node.getValue().accept(this, execution);
+        Value value = node.getValue().accept(this, execution) ;
         if(node.getTarget() != null) {
 
             if(node.getTarget() instanceof ContextAccessExpression) {
@@ -79,6 +79,7 @@ public class Interpreter implements NodeVisitor {
     @Override
     public Value visitContextAccessExpression(ContextAccessExpression node, Execution execution) throws RuntimeError {
         if(node.getTarget() == null || node.getTarget() instanceof ThisExpression) {
+            if(node.getIdentifier().equals("null")) return NullValue.INSTANCE;
             return execution.get(node.getIdentifier());
         } else {
             return node.getTarget().accept(this, execution).getField(execution, execution.getUser(), node.getIdentifier());
@@ -88,7 +89,7 @@ public class Interpreter implements NodeVisitor {
     @Override
     public Value visitVariableDeclaration(VariableDeclaration node, Execution execution) throws RuntimeError {
 
-        Value value = node.getValue().accept(this, execution);
+        Value value = node.getValue() != null ? node.getValue().accept(this, execution) : UndefinedValue.INSTANCE;
 
         switch (node.getMode()) {
             case LET: {
