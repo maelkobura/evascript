@@ -2,6 +2,7 @@ package dev.kobura.evascript.engine;
 
 import dev.kobura.evascript.ScriptEngine;
 import dev.kobura.evascript.engine.register.ExpireFunction;
+import dev.kobura.evascript.engine.register.RangeFunction;
 import dev.kobura.evascript.engine.register.RequireFunction;
 import dev.kobura.evascript.engine.register.TypeofFunction;
 import dev.kobura.evascript.errors.LoadingBuildinException;
@@ -102,6 +103,7 @@ public class RootedEngine implements ScriptEngine {
         systems.add(new ExpireFunction());
         systems.add(new TypeofFunction());
         systems.add(new RequireFunction());
+        systems.add(new RangeFunction());
     }
 
     private final Map<ContextIdentity, Value> builtin = new HashMap<>();

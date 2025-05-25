@@ -101,7 +101,10 @@ public class EvaParser {
     public BlockStatement parseAsBlock() {
         BlockStatement statement = new BlockStatement();
         while (!isAtEnd()) {
-            statement.addStatement(parseStatement());
+            ASTStatement parsedStatement = parseStatement();
+            if(parsedStatement != null) {
+                statement.addStatement(parsedStatement);
+            }
         }
         return statement;
     }
@@ -114,7 +117,10 @@ public class EvaParser {
         BlockStatement block = new BlockStatement();
         consume(SyntaxToken.LBRACE, "Expected '{' to start block");
         while (!check(SyntaxToken.RBRACE) && !isAtEnd()) {
-            block.addStatement(parseStatement());
+            ASTStatement parsedStatement = parseStatement();
+            if(parsedStatement != null) {
+                block.addStatement(parsedStatement);
+            }
         }
         consume(SyntaxToken.RBRACE, "Expected '}' to end block");
         return block;
@@ -184,9 +190,12 @@ public class EvaParser {
         while (!match(SyntaxToken.RBRACE) && !isAtEnd()) {
             if (match(SyntaxToken.DEFAULT)) {
                 consume(SyntaxToken.COLON, "Expected ':' after default case");
-                List<ASTStatement> statements = List.of();
+                List<ASTStatement> statements = new ArrayList<>();
                 while (!check(SyntaxToken.CASE) && !check(SyntaxToken.DEFAULT) && !match(SyntaxToken.RBRACE)) {
-                    statements.add(parseStatement());
+                    ASTStatement parsedStatement = parseStatement();
+                    if(parsedStatement != null) {
+                        statements.add(parsedStatement);
+                    }
                 }
                 cases.add(new SwitchCase(null, true, statements));
             } else {
@@ -197,7 +206,10 @@ public class EvaParser {
                 List<ASTStatement> statements = new ArrayList<>();
 
                 while (!check(SyntaxToken.CASE) && !check(SyntaxToken.DEFAULT) && !match(SyntaxToken.RBRACE)) {
-                    statements.add(parseStatement());
+                    ASTStatement parsedStatement = parseStatement();
+                    if(parsedStatement != null) {
+                        statements.add(parsedStatement);
+                    }
                 }
                 cases.add(new SwitchCase(expression, false, statements));
             }
@@ -347,7 +359,7 @@ public class EvaParser {
     // Handles == and !=
     private ASTExpression parseEqualityExpression() {
         ASTExpression expr = parseBinaryExpression();
-        while (match(LogicToken.EQUAL, LogicToken.NOT_EQUAL)) {
+        while (match(LogicToken.EQUAL, LogicToken.NOT_EQUAL, LogicToken.LESS, LogicToken.GREATER, LogicToken.LESS_EQUAL, LogicToken.GREATER_EQUAL)) {
             Token operator = previous();
             ASTExpression right = parseBinaryExpression();
             expr = new ComparisonExpression(expr, operator, right);
@@ -385,6 +397,11 @@ public class EvaParser {
                 value = Integer.valueOf(nbrstr.toString());
             }
             return new LiteralExpression(value, numberToken);
+        }
+
+        if(match(SyntaxToken.DOUBLE)) {
+            Token doubleToken = previous();
+            return new LiteralExpression(Double.valueOf(doubleToken.value), doubleToken);
         }
 
         if (match(SyntaxToken.STRING)) {
@@ -448,6 +465,10 @@ public class EvaParser {
 
         if(check(SyntaxToken.THIS)) {
             return new ThisExpression();
+        }
+
+        if(check(SyntaxToken.ELSE)) {
+            throw new RuntimeException("Unexpected else body: " + currentToken());
         }
 
         throw new RuntimeException("Unexpected token: " + currentToken());
@@ -587,6 +608,11 @@ public class EvaParser {
         consume(SyntaxToken.RPAREN, "Expected ')' after condition");
 
         ASTStatement thenBranch = parseStatement(); // could be a block or single statement
-        return new IfStatement(null, thenBranch, condition); // assuming you have this class
+        ASTStatement elseBranch = null;
+        if(match(SyntaxToken.ELSE)) {
+            if(match(SyntaxToken.IF)) elseBranch = parseIfStatement();
+            else elseBranch = parseStatement();
+        }
+        return new IfStatement(elseBranch, thenBranch, condition); // assuming you have this class
     }
 }

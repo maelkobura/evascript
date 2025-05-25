@@ -7,6 +7,9 @@ import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.context.Scope;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Benchmark {
 
     @Test
@@ -15,13 +18,13 @@ public class Benchmark {
 
         // Create engine and load default built-ins
         ScriptEngine engine = EngineFactory.createRootedEngine().build();
-        Scope scope = engine.createScope();
 
         // Benchmark the code snippet
         long totalExecutionTime = 0;
         int iterations = 100;
 
         for (int i = 0; i < iterations; i++) {
+            Scope scope = engine.createScope();
             long start = System.nanoTime();
             engine.run(code, scope, null);
             long end = System.nanoTime();
@@ -31,5 +34,7 @@ public class Benchmark {
         double averageTime = (double) totalExecutionTime / iterations / 1_000_000.0;
         System.out.println("Average execution time (milliseconds): " + averageTime);
     }
+
+
 
 }

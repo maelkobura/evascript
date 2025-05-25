@@ -89,4 +89,20 @@ public class NumberValue extends Value {
         }
         throw new RuntimeError("Unsupported operation");
     }
+
+    @Override
+    public Value modulo(Value other) throws RuntimeError {
+        if (other.getType() == ValueType.NUMBER) {
+            try {
+                double otherVal = ((NumberValue) other).val;
+                if (otherVal == 0) {
+                    throw new RuntimeError("Division by zero in modulo operation");
+                }
+                return new NumberValue(val % otherVal);
+            } catch (Exception e) {
+                throw new RuntimeError(e.getMessage());
+            }
+        }
+        throw new RuntimeError("Unsupported operation");
+    }
 }

@@ -7,6 +7,7 @@ import dev.kobura.evascript.runtime.context.Scriptable;
 import dev.kobura.evascript.security.PermissiveUser;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -115,8 +116,12 @@ public class JavaObjectValue extends Value {
         } catch (IllegalAccessException e) {
             return super.execute(execution, user, methodName, args);
         } catch (Exception e) {
-            throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
-                    e.getMessage(), e);
+            if(e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof RuntimeError err) {
+                throw err;
+            }else {
+                throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
+                        e.getMessage(), e);
+            }
         }
     }
     

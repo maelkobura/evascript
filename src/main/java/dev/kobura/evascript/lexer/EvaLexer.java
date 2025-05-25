@@ -168,7 +168,9 @@ public class EvaLexer {
                 case '[': return new Token(SyntaxToken.LBRACKET, String.valueOf(advance()), line);
                 case ']': return new Token(SyntaxToken.RBRACKET, String.valueOf(advance()), line);
                 case ',': return new Token(SyntaxToken.COMMA, String.valueOf(advance()), line);
-                case '=': return new Token(SyntaxToken.ASSIGN, String.valueOf(advance()), line);
+                case '=': return peekNext() == '='
+                        ? new Token(LogicToken.EQUAL, "" + advance() + advance(), line)
+                        : new Token(SyntaxToken.ASSIGN, String.valueOf(advance()), line);
                 case '+':
                     return peekNext() == '+'
                             ? new Token(ArithmeticToken.ADD, "" + advance() + advance(), line)

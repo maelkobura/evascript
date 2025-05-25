@@ -6,6 +6,7 @@ import dev.kobura.evascript.runtime.context.ContextData;
 import dev.kobura.evascript.runtime.context.Scriptable;
 import dev.kobura.evascript.security.PermissiveUser;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -68,9 +69,12 @@ public abstract class Value {
                 } catch (IllegalAccessException e) {
                     break;
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
-                            e.getMessage(), e);
+                    if(e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof RuntimeError err) {
+                        throw err;
+                    }else {
+                        throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
+                                e.getMessage(), e);
+                    }
                 }
             }
         }

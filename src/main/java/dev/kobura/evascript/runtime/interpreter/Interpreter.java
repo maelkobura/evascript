@@ -216,11 +216,20 @@ public class Interpreter implements NodeVisitor {
 
         if(node.getOperator().type instanceof ArithmeticToken tk) {
             switch (tk) {
-                case ADD -> operand.add(new NumberValue(1));
-                case MINUS -> operand.subtract(new NumberValue(1));
+                case ADD -> {
+                    return operand.multiply(new NumberValue(1));
+                }
+                case MINUS -> {
+                    return operand.multiply(new NumberValue(-1));
+                }
+                case PLUS -> {
+                    return operand.add(new NumberValue(1));
+                }
+                case SUB -> {
+                    return operand.subtract(new NumberValue(1));
+                }
                 default -> throw new RuntimeError("Unsupported unary operator: " + node.getOperator());
             }
-            return operand;
         }else if(node.getOperator().type.equals(SyntaxToken.BANG) && operand.getType() == ValueType.BOOLEAN) {
             return new BooleanValue(!(Boolean) operand.unwrap());
         }else {
@@ -286,7 +295,7 @@ public class Interpreter implements NodeVisitor {
     public Value visitDoWhileStatement(DoWhileStatement node, Execution execution) throws RuntimeError {
         do {
             try {
-                node.accept(this, execution);
+                node.getBody().accept(this, execution);
             }catch (ContinueSignal signal) {
                 continue;
             }catch (BreakSignal signal) {
@@ -296,7 +305,7 @@ public class Interpreter implements NodeVisitor {
             } catch (RuntimeError e) {
                 throw e;
             }
-        }while (node.getCondition().accept(this, execution).equals(new BooleanValue(true)));
+        }while (node.getCondition().accept(this, execution).isEqual(new BooleanValue(true)));
         return UndefinedValue.INSTANCE;
     }
 
@@ -330,7 +339,7 @@ public class Interpreter implements NodeVisitor {
 
     @Override
     public Value visitWhileStatement(WhileStatement node, Execution execution) throws RuntimeError {
-        while (node.getCondition().accept(this, execution).equals(new BooleanValue(true))) {
+        while (node.getCondition().accept(this, execution).isEqual(new BooleanValue(true))) {
             try {
                 node.getBody().accept(this, execution);
             } catch (BreakSignal signal) {
@@ -364,6 +373,7 @@ public class Interpreter implements NodeVisitor {
     @Override
     public Value visitSwitchStatement(SwitchStatement node, Execution execution) throws RuntimeError {
         Value v = node.getCondition().accept(this, execution);
+        root:
         for(SwitchCase c : node.getCases()) {
             if(!c.isDefault() && !c.getExpression().accept(this, execution).isEqual(v)) {
                 continue;
@@ -372,7 +382,7 @@ public class Interpreter implements NodeVisitor {
                 try {
                     s.accept(this, execution);
                 } catch (BreakSignal signal) {
-                    break;
+                    break root;
                 } catch (ReturnSignal signal) {
                     throw signal;
                 } catch (RuntimeError e) {

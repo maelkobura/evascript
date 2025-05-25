@@ -58,4 +58,15 @@ public class ArrayTest {
         assertEquals("76", engine.run(code, scope, null));
     }
 
+    @Test
+    void arrayMultiplyTest() throws RuntimeError, LoadingBuildinException {
+        String code = "<? " +
+                "var i = [14, 56, 78]; " +
+                "var nv = i*5;" +
+                "> {nv.length()}";
+        ScriptEngine engine = EngineFactory.createRootedEngine().build();
+        Scope scope = engine.createScope();
+        assertEquals("15", engine.run(code, scope, null));
+    }
+
 }

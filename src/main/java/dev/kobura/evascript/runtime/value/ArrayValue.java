@@ -6,6 +6,7 @@ import dev.kobura.evascript.runtime.context.ContextData;
 import dev.kobura.evascript.runtime.context.Scriptable;
 import dev.kobura.evascript.security.PermissiveUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayValue extends Value{
@@ -49,7 +50,7 @@ public class ArrayValue extends Value{
     }
 
     @Scriptable
-    public Value set(int index, Object obj) {
+    public Value set(int index, Value obj) {
         Value v = Value.from(obj);
         values.add(index, v);
         return v;
@@ -62,9 +63,26 @@ public class ArrayValue extends Value{
     }
 
     @Scriptable
+    public Value length() {
+        return NumberValue.from(values.size());
+    }
+
+    @Scriptable
     public void foreach(@ContextData Execution execution, @ContextData PermissiveUser user, FunctionValue func) throws RuntimeError {
         for(Value v : values) {
             func.execute(execution, user, new ArrayValue(List.of(v)));
         }
+    }
+
+    @Override
+    public Value multiply(Value other) throws RuntimeError {
+        if (other instanceof NumberValue nv) {
+            List<Value> vals = new ArrayList<>();
+            for(int i=0;i<((Integer) other.unwrap());i++) {
+                vals.addAll(values);
+            }
+            return new ArrayValue(vals);
+        }
+        return super.multiply(other);
     }
 }

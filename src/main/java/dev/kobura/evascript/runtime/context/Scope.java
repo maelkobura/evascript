@@ -1,6 +1,7 @@
 package dev.kobura.evascript.runtime.context;
 
 import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.value.UndefinedValue;
 import dev.kobura.evascript.runtime.value.Value;
 
@@ -83,9 +84,12 @@ public class Scope {
         return pool;
     }
 
-    public void set(String name, Value value) {
+    public void set(String name, Value value) throws RuntimeError {
         ContextIdentity id = varPool.keySet().stream().filter(identity -> identity.getName().equals(name)).findFirst().orElse(null);
-        if(id == null && parent != null) {
+        if(id == null) {
+            if(parent == null) {
+                throw new RuntimeError("Variable " + name + " not initialized");
+            }
             parent.set(name, value);
             return;
         }

@@ -72,7 +72,7 @@ public class Execution {
         scope.redefine(older, newer);
     }
 
-    public void set(String name, Value value) {
+    public void set(String name, Value value) throws RuntimeError {
         scope.set(name, value);
     }
 
