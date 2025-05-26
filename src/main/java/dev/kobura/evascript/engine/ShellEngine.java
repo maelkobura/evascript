@@ -155,7 +155,8 @@ public class ShellEngine implements ScriptEngine {
     @Override
     public boolean checkPermissions(PermissiveUser user, String...permissions) {
         if(securityAgent == null) return true;
-        if(user == null || !(user.getClass().isAssignableFrom(securityAgent))) return false;
+        if(user == null || !(this.securityAgent.isAssignableFrom(user.getClass()))) return false;
+        if(permissions.length == 0) return true;
         for(String permission : permissions) {
             if(user.hasPermission(permission)) return true;
         }
