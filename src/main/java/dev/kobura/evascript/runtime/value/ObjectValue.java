@@ -2,6 +2,7 @@ package dev.kobura.evascript.runtime.value;
 
 import com.google.gson.Gson;
 import dev.kobura.evascript.runtime.Execution;
+import dev.kobura.evascript.runtime.context.Scriptable;
 import dev.kobura.evascript.security.PermissiveUser;
 import lombok.Getter;
 
@@ -27,11 +28,27 @@ public class ObjectValue extends Value {
         this.values = values;
     }
 
-
+    public static ObjectValue fromMap(Map<String, Object> map) {
+        return new ObjectValue(map.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> Value.from(entry.getValue())
+                )));
+    }
 
     @Override
     public ValueType getType() {
         return ValueType.OBJECT;
+    }
+
+    @Scriptable
+    public Value keys() {
+        return Value.from(values.keySet().toArray(new String[0]));
+    }
+
+    @Scriptable
+    public Value values() {
+        return Value.from(values.values().toArray(new Value[0]));
     }
 
     @Override

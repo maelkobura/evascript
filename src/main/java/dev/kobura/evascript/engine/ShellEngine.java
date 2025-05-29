@@ -1,6 +1,5 @@
 package dev.kobura.evascript.engine;
 
-import dev.kobura.evascript.ScriptEngine;
 import dev.kobura.evascript.engine.register.ExpireFunction;
 import dev.kobura.evascript.engine.register.RangeFunction;
 import dev.kobura.evascript.engine.register.RequireFunction;
@@ -15,7 +14,6 @@ import dev.kobura.evascript.runtime.Execution;
 import dev.kobura.evascript.runtime.context.ContextIdentity;
 import dev.kobura.evascript.runtime.context.Scope;
 import dev.kobura.evascript.runtime.context.Scriptable;
-import dev.kobura.evascript.runtime.context.registerable.Register;
 import dev.kobura.evascript.runtime.context.registerable.RegisteredFunction;
 import dev.kobura.evascript.runtime.value.UndefinedValue;
 import dev.kobura.evascript.runtime.value.Value;
@@ -99,23 +97,63 @@ public class ShellEngine implements ScriptEngine {
 
         }
 
-        systems.add(new RequireFunction());
         systems.add(new ExpireFunction());
         systems.add(new TypeofFunction());
         systems.add(new RangeFunction());
     }
 
     private final Map<ContextIdentity, Value> builtin = new HashMap<>();
-    private final List<Register> registers = new ArrayList<Register>();
     private final List<RegisteredFunction> systems = new ArrayList<>();
 
-    @Override
-    public void register(Register register) {
-        registers.add(register);
+    public void loadBuiltin(Object obj) throws LoadingBuildinException {
+        Class<?> clazz = obj.getClass();
+        if (!clazz.isAnnotationPresent(Scriptable.class))
+            throw new LoadingBuildinException(clazz.getName() + ": the class hasn't Scriptable");
+        Scriptable scriptable = clazz.getAnnotation(Scriptable.class);
+        if (scriptable.defaultName().isEmpty()) {
+            throw new LoadingBuildinException(clazz.getName() + ": the class hasn't default name");
+        }
+        ContextIdentity identity = new ContextIdentity(scriptable.defaultName(), true, Instant.now(), 0);
+        builtin.put(identity, Value.from(obj));
+    }
+
+    public void loadBuiltin(String packagee) throws LoadingBuildinException {
+        try (ScanResult scanResult = new ClassGraph()
+                .enableClassInfo()
+                .enableAnnotationInfo()
+                .acceptPackages(builtinPackage)
+                .scan()) {
+
+            for(ClassInfo classInfo : scanResult.getClassesWithAnnotation(Scriptable.class.getName())) {
+                if (!classInfo.getOuterClasses().isEmpty()) {
+                    continue;
+                }
+                try {
+                    String className = classInfo.getName();
+                    Class<?> clazz = Class.forName(className);
+                    if (!clazz.isAnnotationPresent(Scriptable.class))
+                        throw new LoadingBuildinException(className + ": the class hasn't Scriptable");
+                    Scriptable scriptable = clazz.getAnnotation(Scriptable.class);
+                    if (scriptable.defaultName().isEmpty()) {
+                        throw new LoadingBuildinException(className + ": the class hasn't default name");
+                    }
+                    Object obj = clazz.getDeclaredConstructor().newInstance();
+                    ContextIdentity identity = new ContextIdentity(scriptable.defaultName(), true, Instant.now(), 0);
+                    builtin.put(identity, Value.from(obj));
+                }catch(Exception e){
+                    throw new LoadingBuildinException(e);
+                }
+            }
+
+        }
+    }
+
+    public String run(String code, Scope scope, PermissiveUser user) throws RuntimeError {
+        return run(code, scope, user, new HashMap<>());
     }
 
     @Override
-    public String run(String code, Scope scope, PermissiveUser user) throws RuntimeError {
+    public String run(String code, Scope scope, PermissiveUser user, Map<String, Object> injectable) throws RuntimeError {
         scope.refresh();
 
         if(!code.endsWith(";")) {
@@ -128,23 +166,18 @@ public class ShellEngine implements ScriptEngine {
         EvaParser parser = new EvaParser(tokens);
         BlockStatement block = parser.parseAsBlock();
 
-        Execution execution = new Execution(this, scope, user, new HashMap<>());
-        Object obj = execution.run(block);
-        if(obj == null) {
-            obj = UndefinedValue.INSTANCE;
+        Execution execution = new Execution(this, scope, user, injectable);
+        Value val = execution.run(block);
+        if(val == null) {
+            val = UndefinedValue.INSTANCE;
         }
-        return obj.toString();
+        return val.toString();
     }
 
     @Override
     public String run(File file, Scope scope, PermissiveUser user) throws RuntimeError, IOException {
         FileInputStream in = new FileInputStream(file);
         return run(new String(in.readAllBytes()), scope, user);
-    }
-
-    @Override
-    public List<Register> getRegisters() {
-        return registers;
     }
 
     @Override
@@ -204,18 +237,8 @@ public class ShellEngine implements ScriptEngine {
     }
 
     @Override
-    public boolean isEnableRegister() {
-        return enableRegister;
-    }
-
-    @Override
     public boolean isEnableLoad() {
         return enableLoad;
-    }
-
-    @Override
-    public String getBuiltinPackage() {
-        return builtinPackage;
     }
 
     @Override

@@ -117,8 +117,7 @@ public abstract class Value {
         } else if (o instanceof Value value) {
             return value;
         } else if (o instanceof Object[]) {
-            // TODO: Handle arrays
-            return UndefinedValue.INSTANCE;
+            return new ArrayValue(new ArrayList<>(List.of((Object[]) o).stream().map(Value::from).toList()));
         } else {
             return NullValue.INSTANCE;
         }

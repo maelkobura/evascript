@@ -34,6 +34,18 @@ public class JavaObjectValue extends Value {
     }
 
     @Override
+    public String toString() {
+        try {
+            if(object.getClass().getMethod("toString").isAnnotationPresent(Scriptable.class)) {
+                return object.toString();
+            }else if(!object.getClass().getAnnotation(Scriptable.class).defaultName().equals("")) {
+                return "java:" + object.getClass().getAnnotation(Scriptable.class).defaultName();
+            }
+        } catch (NoSuchMethodException e) {}
+        return "java:" + object.getClass().getSimpleName();
+    }
+
+    @Override
     public boolean isEqual(Value other) {
         if(other instanceof JavaObjectValue o) {
             return o.object == object;
@@ -93,7 +105,12 @@ public class JavaObjectValue extends Value {
             int i = 0;
             for(Parameter param : method.getParameters()) {
                 if(param.isAnnotationPresent(ContextData.class)) {
-                    javaArgs.add(execution.getContextData().get(param.getName()));
+                    if(param.getName().equals("user") && param.getType().equals(execution.getEngine().getSecurityAgent())) {
+                        javaArgs.add(execution.getEngine().getSecurityAgent().cast(user));
+                    }else {
+                        javaArgs.add(execution.getContextData().get(param.getName()));
+                    }
+
                 }else {
                     javaArgs.add(obj.get(i));
                     i++;
@@ -103,7 +120,11 @@ public class JavaObjectValue extends Value {
             Map<String, Object> obj = (Map<String, Object>) args.unwrap();
             for(Parameter param : method.getParameters()) {
                 if(param.isAnnotationPresent(ContextData.class)) {
-                    javaArgs.add(execution.getContextData().get(param.getName()));
+                    if(param.getName().equals("user") && param.getType().equals(execution.getEngine().getSecurityAgent())) {
+                        javaArgs.add(execution.getEngine().getSecurityAgent().cast(user));
+                    }else {
+                        javaArgs.add(execution.getContextData().get(param.getName()));
+                    }
                 }else {
                     javaArgs.add(obj.get(param.getName()));
                 }
@@ -120,7 +141,7 @@ public class JavaObjectValue extends Value {
                 throw err;
             }else {
                 throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
-                        e.getMessage(), e);
+                        e.getCause().getMessage(), e.getCause());
             }
         }
     }

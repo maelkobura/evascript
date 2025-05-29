@@ -1,5 +1,7 @@
 package dev.kobura.evascript.engine.register;
 
+import dev.kobura.evascript.engine.RequireSubengine;
+import dev.kobura.evascript.engine.RootedEngine;
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.Execution;
 import dev.kobura.evascript.runtime.context.Scriptable;
@@ -23,7 +25,8 @@ public class RequireFunction implements RegisteredFunction {
     @Override
     public Value invoke(Execution execution, Value... values) throws RuntimeError {
         String value = values[0].toString();
-        for(Register reg : execution.getEngine().getRegisters()) {
+        RequireSubengine eng = (RequireSubengine) execution.getEngine();
+        for(Register reg : eng.getRegisters()) {
             Object obj = reg.require(value);
             if(obj != null && obj.getClass().isAnnotationPresent(Scriptable.class)) {
                 return Value.from(obj);

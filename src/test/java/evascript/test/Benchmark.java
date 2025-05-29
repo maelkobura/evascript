@@ -1,14 +1,11 @@
 package evascript.test;
 
-import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.engine.ScriptEngine;
 import dev.kobura.evascript.engine.EngineFactory;
 import dev.kobura.evascript.errors.LoadingBuildinException;
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.context.Scope;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.io.IOException;
 
 public class Benchmark {
 

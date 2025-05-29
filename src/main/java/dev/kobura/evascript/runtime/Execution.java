@@ -1,10 +1,9 @@
 package dev.kobura.evascript.runtime;
 
-import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.engine.ScriptEngine;
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.parsing.ast.statement.BlockStatement;
 import dev.kobura.evascript.parsing.ast.statement.ExpressionStatement;
-import dev.kobura.evascript.runtime.context.ContextData;
 import dev.kobura.evascript.runtime.context.ContextIdentity;
 import dev.kobura.evascript.runtime.context.Scope;
 import dev.kobura.evascript.runtime.interpreter.Interpreter;
@@ -18,6 +17,7 @@ import dev.kobura.evascript.runtime.value.Value;
 import dev.kobura.evascript.security.PermissiveUser;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Execution {
@@ -47,7 +47,7 @@ public class Execution {
     public Execution(ScriptEngine engine, Scope scope, PermissiveUser user, Map<String, Object> contextData) {
         this.engine = engine;
         this.scope = scope;
-        this.contextData = contextData;
+        this.contextData = new HashMap<>(contextData);
         this.user = user;
 
         this.contextData.put("execution", this);
@@ -115,10 +115,10 @@ public class Execution {
         }
     }
 
-    public Object runEmbed(ExpressionStatement stmt) throws RuntimeError {
+    public Value runEmbed(ExpressionStatement stmt) throws RuntimeError {
         NodeVisitor visitor = new Interpreter();
         try {
-            return stmt.accept(visitor, this).unwrap();
+            return stmt.accept(visitor, this);
         }catch (ReturnSignal e) {
             throw new RuntimeError("Unsupported return statement in embed code");
         }catch (BreakSignal e) {
@@ -129,10 +129,10 @@ public class Execution {
     }
 
 
-    public Object run(BlockStatement block) throws RuntimeError {
+    public Value run(BlockStatement block) throws RuntimeError {
         NodeVisitor visitor = new Interpreter();
         try {
-            return block.accept(visitor, this).unwrap();
+            return block.accept(visitor, this);
         }catch (ReturnSignal e) {
             throw new RuntimeError("Unsupported return statement in root code");
         }catch (BreakSignal e) {

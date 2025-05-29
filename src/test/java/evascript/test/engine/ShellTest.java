@@ -1,6 +1,7 @@
 package evascript.test.engine;
 
-import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.engine.RootedEngine;
+import dev.kobura.evascript.engine.ScriptEngine;
 import dev.kobura.evascript.engine.EngineFactory;
 import dev.kobura.evascript.errors.LoadingBuildinException;
 import dev.kobura.evascript.errors.RuntimeError;
@@ -24,14 +25,6 @@ public class ShellTest {
         ScriptEngine engine = EngineFactory.createShellEngine().build();
         Scope scope = engine.createScope();
         assertDoesNotThrow(() -> Long.valueOf(engine.run("date.now()", scope, null)));
-    }
-
-    @Test
-    void testRequireCode() throws RuntimeError, LoadingBuildinException {
-        ScriptEngine engine = EngineFactory.createShellEngine().build();
-        engine.register(new SampleRegister());
-        Scope scope = engine.createScope();
-        assertEquals("Hello World!", engine.run("@require('helloworld').hello()", scope, null));
     }
 
 }

@@ -1,4 +1,4 @@
-package dev.kobura.evascript;
+package dev.kobura.evascript.engine;
 
 import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.Execution;
@@ -28,11 +28,7 @@ public interface ScriptEngine {
 
     boolean isEnableGlobals();
 
-    boolean isEnableRegister();
-
     boolean isEnableLoad();
-
-    String getBuiltinPackage();
 
     Value invokeSystem(Execution execution, String name, Value...values) throws RuntimeError;
 
@@ -44,9 +40,7 @@ public interface ScriptEngine {
 
     Map<ContextIdentity, Value> getAllBuiltin();
 
-    void register(Register register);
-
-    List<Register> getRegisters();
+    String run(String code, Scope scope, PermissiveUser user, Map<String, Object> injectable) throws RuntimeError;
 
     String run(String code, Scope scope, PermissiveUser user) throws RuntimeError;
 

@@ -1,6 +1,6 @@
 package evascript.test.globals;
 
-import dev.kobura.evascript.ScriptEngine;
+import dev.kobura.evascript.engine.ScriptEngine;
 import dev.kobura.evascript.engine.EngineFactory;
 import dev.kobura.evascript.errors.LoadingBuildinException;
 import dev.kobura.evascript.errors.RuntimeError;

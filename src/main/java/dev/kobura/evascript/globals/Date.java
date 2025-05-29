@@ -31,7 +31,7 @@ public class Date {
             return calendar.get(Calendar.DAY_OF_MONTH);
         }
 
-        @Override
+        @Scriptable
         public String toString() {
             return String.valueOf(timestamp);
         }

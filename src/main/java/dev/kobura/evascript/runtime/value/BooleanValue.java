@@ -23,6 +23,11 @@ public class BooleanValue extends Value {
         return other instanceof BooleanValue && ((BooleanValue) other).value == value;
     }
 
+    @Override
+    public String toString() {
+        return Boolean.toString(value);
+    }
+
     public static boolean isTruthy(Value value) {
         if (value instanceof BooleanValue) {
             return ((Boolean) value.unwrap()).booleanValue();

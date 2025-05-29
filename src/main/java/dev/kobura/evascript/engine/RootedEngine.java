@@ -1,6 +1,5 @@
 package dev.kobura.evascript.engine;
 
-import dev.kobura.evascript.ScriptEngine;
 import dev.kobura.evascript.engine.register.ExpireFunction;
 import dev.kobura.evascript.engine.register.RangeFunction;
 import dev.kobura.evascript.engine.register.RequireFunction;
@@ -25,6 +24,7 @@ import dev.kobura.evascript.security.PermissiveUser;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RootedEngine implements ScriptEngine {
+public class RootedEngine implements ScriptEngine, RequireSubengine {
 
     protected long defaultExpirationTime;
     protected long defaultConstExpirationTime;
@@ -111,13 +111,13 @@ public class RootedEngine implements ScriptEngine {
     private final List<RegisteredFunction> systems = new ArrayList<>();
 
     @Override
-    public void register(Register register) {
-        registers.add(register);
+    public List<Register> getRegisters() {
+        return registers;
     }
 
     @Override
-    public List<Register> getRegisters() {
-        return registers;
+    public void register(Register register) {
+        registers.add(register);
     }
 
 
@@ -128,6 +128,11 @@ public class RootedEngine implements ScriptEngine {
 
     @Override
     public String run(String code, Scope scope, PermissiveUser user) throws RuntimeError {
+        return run(code, scope, user, new HashMap<>());
+    }
+
+    @Override
+    public String run(String code, Scope scope, PermissiveUser user, Map<String, Object> injectable) throws RuntimeError {
         EvaSyntax.ParseResult result = EvaSyntax.preprocess(code);
         scope.refresh();
         if(result.root != null) {
@@ -137,7 +142,7 @@ public class RootedEngine implements ScriptEngine {
             EvaParser parser = new EvaParser(tokens);
             BlockStatement block = parser.parseAsBlock();
 
-            Execution execution = new Execution(this, scope, user, new HashMap<>());
+            Execution execution = new Execution(this, scope, user, injectable);
             execution.runRoot(block);
         }
 
@@ -149,7 +154,7 @@ public class RootedEngine implements ScriptEngine {
 
             EvaParser parser = new EvaParser(tokens);
             ExpressionStatement stmt = parser.parseAsExpression();
-            Execution execution = new Execution(this, scope, user, new HashMap<>());
+            Execution execution = new Execution(this, scope, user, injectable);
             Object value = execution.runEmbed(stmt);
             if(value != null) {
                 values.add(value.toString());
@@ -227,11 +232,6 @@ public class RootedEngine implements ScriptEngine {
     @Override
     public boolean isEnableLoad() {
         return enableLoad;
-    }
-
-    @Override
-    public String getBuiltinPackage() {
-        return builtinPackage;
     }
 
     @Override

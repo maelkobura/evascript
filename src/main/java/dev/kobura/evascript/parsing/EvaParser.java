@@ -528,10 +528,12 @@ public class EvaParser {
     protected ArgumentExpression parseArgumentExpression() {
         if (check(SyntaxToken.RPAREN)) {
             return new SequencedArgumentExpression(List.of());
-        } else if (peekToken(2).type == SyntaxToken.ASSIGN) {
+        } else if (peekToken(1).type == SyntaxToken.ASSIGN) {
             Map<String, ASTExpression> arguments = new HashMap<>();
             do {
-                arguments.put(consume(SyntaxToken.IDENTIFIER, "Expected argument name").value, parseExpression());
+                String name = consume(SyntaxToken.IDENTIFIER, "Expected argument name").value;
+                consume(SyntaxToken.ASSIGN, "Expected '=' after argument name");
+                arguments.put(name, parseExpression());
             } while (match(SyntaxToken.COMMA));
             return new StructuredArgumentExpression(arguments);
         } else {
