@@ -141,7 +141,7 @@ public class JavaObjectValue extends Value {
                 throw err;
             }else {
                 throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
-                        e.getCause().getMessage(), e.getCause());
+                        e, e);
             }
         }
     }

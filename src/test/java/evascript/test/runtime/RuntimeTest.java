@@ -47,7 +47,7 @@ public class RuntimeTest {
         String code = "<? try{date.create(\"mouahahah\");} catch(e) {var error = e;} > L'erreur: {error}";
         ScriptEngine engine = EngineFactory.createRootedEngine().build();
         Scope scope = engine.createScope();
-        assertEquals("L'erreur: Native method 'create' threw an exception: argument type mismatch", engine.run(code, scope, null));
+        assertEquals("L'erreur: Native method 'create' threw an exception: java.lang.IllegalArgumentException: argument type mismatch", engine.run(code, scope, null));
     }
 
     @Test
