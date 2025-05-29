@@ -9,11 +9,15 @@ import dev.kobura.evascript.errors.RuntimeError;
 import dev.kobura.evascript.runtime.context.ContextIdentity;
 import dev.kobura.evascript.runtime.context.Scope;
 import dev.kobura.evascript.runtime.value.ObjectValue;
+import dev.kobura.evascript.runtime.value.UndefinedValue;
+import dev.kobura.evascript.runtime.value.Value;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class JsonTest {
 
@@ -59,6 +63,40 @@ public class JsonTest {
 
         // Vérification de l'objet imbriqué
         assertEquals("nestedValue", engine.run("a.object.nestedKey", scope, null));
+    }
+
+    @Test
+    void toJson() {
+        Map<String, Value> values = Map.of(
+                "string", Value.from("hello"),
+                "number", Value.from(42),
+                "bool", Value.from(true),
+                "null", UndefinedValue.INSTANCE,
+                "array", Value.from(new Value[] {
+                        Value.from(45),
+                        Value.from(23),
+                        Value.from(12)
+                }),
+                "object", new ObjectValue(Map.of(
+                        "nestedKey", Value.from("nestedValue")
+                ))
+        );
+
+        ObjectValue objectValue = new ObjectValue(values);
+        JsonObject json = objectValue.toJson();
+
+        assertEquals("hello", json.get("string").getAsString());
+        assertEquals(42, json.get("number").getAsInt());
+        assertEquals(true, json.get("bool").getAsBoolean());
+
+        JsonArray arr = json.getAsJsonArray("array");
+        assertEquals(3, arr.size());
+        assertEquals(45, arr.get(0).getAsInt());
+        assertEquals(23, arr.get(1).getAsInt());
+        assertEquals(12, arr.get(2).getAsInt());
+
+        JsonObject nested = json.getAsJsonObject("object");
+        assertEquals("nestedValue", nested.get("nestedKey").getAsString());
     }
 
 }
