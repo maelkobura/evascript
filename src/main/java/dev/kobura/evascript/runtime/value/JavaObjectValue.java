@@ -101,7 +101,7 @@ public class JavaObjectValue extends Value {
         List<Object> javaArgs = new ArrayList<>();
 
         if (args.getType() == ValueType.ARRAY) {
-            List<Object> obj = (List<Object>) args.unwrap();
+            Object[] obj = (Object[]) args.unwrap();
             int i = 0;
             for(Parameter param : method.getParameters()) {
                 if(param.isAnnotationPresent(ContextData.class)) {
@@ -112,7 +112,25 @@ public class JavaObjectValue extends Value {
                     }
 
                 }else {
-                    javaArgs.add(obj.get(i));
+                    if (param.getType().isAssignableFrom(String[].class)) {
+                        Object value = obj[i];
+
+                        if (value instanceof Object[]) {
+                            Object[] objectArray = (Object[]) value;
+
+                            // Conversion en String[]
+                            String[] stringArray = Arrays.stream(objectArray)
+                                    .map(element -> element != null ? element.toString() : null)
+                                    .toArray(String[]::new);
+
+                            javaArgs.add(stringArray);
+                        } else {
+                            javaArgs.add(null); // ou gérer le cas d'erreur différemment
+                        }
+                    }
+                    else {
+                        javaArgs.add(obj[i]);
+                    }
                     i++;
                 }
             }
@@ -126,7 +144,26 @@ public class JavaObjectValue extends Value {
                         javaArgs.add(execution.getContextData().get(param.getName()));
                     }
                 }else {
-                    javaArgs.add(obj.get(param.getName()));
+                    if (param.getType().isAssignableFrom(String[].class)) {
+                        Object value = obj.getOrDefault(param.getName(), null);
+
+                        if (value instanceof Object[]) {
+                            Object[] objectArray = (Object[]) value;
+
+                            // Conversion en String[]
+                            String[] stringArray = Arrays.stream(objectArray)
+                                    .map(element -> element != null ? element.toString() : null)
+                                    .toArray(String[]::new);
+
+                            javaArgs.add(stringArray);
+                        } else {
+                            javaArgs.add(null); // ou gérer le cas d'erreur différemment
+                        }
+                    }
+                    else {
+                        javaArgs.add(obj.getOrDefault(param.getName(), null));
+                    }
+
                 }
             }
         }
@@ -139,7 +176,10 @@ public class JavaObjectValue extends Value {
         } catch (Exception e) {
             if(e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof RuntimeError err) {
                 throw err;
-            }else {
+            } else if (e instanceof InvocationTargetException) {
+                throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
+                        ((InvocationTargetException) e).getTargetException().getMessage(), ((InvocationTargetException) e).getTargetException());
+            } else {
                 throw new RuntimeError("Native method '" + methodName + "' threw an exception: " +
                         e, e);
             }

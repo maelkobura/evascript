@@ -28,7 +28,13 @@ public class ArrayValue extends Value{
 
     @Override
     public Object unwrap() {
-        return values.stream().map(Value::unwrap).toList();
+        return values.stream()
+                .map(value -> {
+                    Object unwrappedValue = value.unwrap();
+                    // Perform additional operations or transformations on unwrappedValue if needed
+                    return unwrappedValue;
+                })
+                .toArray();
     }
 
     @Override

@@ -27,4 +27,9 @@ public class SampleObject {
         return (first != null ? first : "")  + (second != null ? second : "") + (third != null ? third : "");
     }
 
+    @Scriptable
+    public String how(String[] args) {
+        return String.join(" ", args);
+    }
+
 }

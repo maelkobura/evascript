@@ -49,4 +49,22 @@ public class ArgumentTest {
         assertEquals("Hello World", engine.run(code, scope, null));
     }
 
+    @Test
+    void arrayArgs() throws RuntimeError, LoadingBuildinException {
+        ShellEngine engine = EngineFactory.createShellEngine().build();
+        engine.loadBuiltin(new SampleObject());
+        String code = "test.how([\"Hello\", \"World\"])";
+        Scope scope = engine.createScope();
+        assertEquals("Hello World", engine.run(code, scope, null));
+    }
+
+    @Test
+    void structuredArrayArgs() throws RuntimeError, LoadingBuildinException {
+        ShellEngine engine = EngineFactory.createShellEngine().build();
+        engine.loadBuiltin(new SampleObject());
+        String code = "test.how(args=[\"Hello\", \"World\"])";
+        Scope scope = engine.createScope();
+        assertEquals("Hello World", engine.run(code, scope, null));
+    }
+
 }

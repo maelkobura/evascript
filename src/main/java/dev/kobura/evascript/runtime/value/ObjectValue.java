@@ -1,6 +1,6 @@
 package dev.kobura.evascript.runtime.value;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import dev.kobura.evascript.runtime.Execution;
 import dev.kobura.evascript.runtime.context.Scriptable;
 import dev.kobura.evascript.security.PermissiveUser;
@@ -34,6 +34,72 @@ public class ObjectValue extends Value {
                         Map.Entry::getKey,
                         entry -> Value.from(entry.getValue())
                 )));
+    }
+
+
+
+    public static ObjectValue fromJson(JsonObject json) {
+        Map<String, Value> map = json.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> fromJsonElement(entry.getValue())
+                ));
+        return new ObjectValue(map);
+    }
+
+    private static Value fromJsonElement(JsonElement element) {
+        if (element.isJsonNull()) {
+            return UndefinedValue.INSTANCE;
+        } else if (element.isJsonPrimitive()) {
+            JsonPrimitive primitive = element.getAsJsonPrimitive();
+            if (primitive.isBoolean()) {
+                return Value.from(primitive.getAsBoolean());
+            } else if (primitive.isNumber()) {
+                return Value.from(primitive.getAsDouble());
+            } else if (primitive.isString()) {
+                return Value.from(primitive.getAsString());
+            }
+        } else if (element.isJsonObject()) {
+            return fromJson(element.getAsJsonObject());
+        } else if (element.isJsonArray()) {
+            JsonArray array = element.getAsJsonArray();
+            Value[] values = new Value[array.size()];
+            for (int i = 0; i < array.size(); i++) {
+                values[i] = fromJsonElement(array.get(i));
+            }
+            return Value.from(values);
+        }
+        return UndefinedValue.INSTANCE;
+    }
+
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        for (Map.Entry<String, Value> entry : values.entrySet()) {
+            json.add(entry.getKey(), toJsonElement(entry.getValue()));
+        }
+        return json;
+    }
+
+    private static JsonElement toJsonElement(Value value) {
+        if (value instanceof StringValue s) {
+            return new JsonPrimitive(String.valueOf(s.unwrap()));
+        } else if (value instanceof NumberValue n) {
+            return new JsonPrimitive((Number) n.unwrap());
+        } else if (value instanceof BooleanValue b) {
+            return new JsonPrimitive((Boolean) b.unwrap());
+        } else if (value instanceof ArrayValue a) {
+            JsonArray array = new JsonArray();
+            for (Value v : a.getValues()) {
+                array.add(toJsonElement(v));
+            }
+            return array;
+        } else if (value instanceof ObjectValue o) {
+            return o.toJson(); // récursif
+        } else if (value instanceof UndefinedValue) {
+            return null; // ou JsonNull.INSTANCE si tu préfères explicitement JsonNull
+        } else {
+            return new JsonPrimitive(value.toString()); // fallback
+        }
     }
 
     @Override
