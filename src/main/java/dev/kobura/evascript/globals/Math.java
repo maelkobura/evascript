@@ -1,8 +1,10 @@
 package dev.kobura.evascript.globals;
 
 import dev.kobura.evascript.errors.RuntimeError;
+import dev.kobura.evascript.runtime.context.Globals;
 import dev.kobura.evascript.runtime.context.Scriptable;
 
+@Globals
 @Scriptable(defaultName = "math")
 public class Math {
 

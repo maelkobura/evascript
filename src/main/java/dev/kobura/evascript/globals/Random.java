@@ -1,9 +1,11 @@
 package dev.kobura.evascript.globals;
 
+import dev.kobura.evascript.runtime.context.Globals;
 import dev.kobura.evascript.runtime.context.Scriptable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+@Globals
 @Scriptable(defaultName = "random")
 public class Random {
 

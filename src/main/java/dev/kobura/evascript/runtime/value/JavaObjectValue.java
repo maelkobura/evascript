@@ -68,7 +68,7 @@ public class JavaObjectValue extends Value {
             return UndefinedValue.INSTANCE;
         }
 
-        if(execution.getEngine().checkPermissions(user, field.getAnnotation(Scriptable.class).permissions())) {
+        if(!execution.getEngine().checkPermissions(user, field.getAnnotation(Scriptable.class).permissions())) {
             return UndefinedValue.INSTANCE;
         }
 

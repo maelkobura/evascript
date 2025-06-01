@@ -2,6 +2,7 @@ package dev.kobura.evascript.runtime.context;
 
 import dev.kobura.evascript.engine.ScriptEngine;
 import dev.kobura.evascript.errors.RuntimeError;
+import dev.kobura.evascript.runtime.value.JavaObjectValue;
 import dev.kobura.evascript.runtime.value.UndefinedValue;
 import dev.kobura.evascript.runtime.value.Value;
 
@@ -76,8 +77,13 @@ public class Scope {
     }
 
     public Map<ContextIdentity, Value> getPool() {
-        Map<ContextIdentity, Value> pool = new HashMap<>(varPool);
-        if(parent != null) {
+        Map<ContextIdentity, Value> pool = new HashMap<>();
+        varPool.forEach((id, value) -> {
+            if (!(value instanceof JavaObjectValue && value.unwrap().getClass().isAnnotationPresent(Globals.class))) {
+                pool.put(id, value);
+            }
+        });
+        if (parent != null) {
             pool.putAll(parent.getPool());
         }
         return pool;
